@@ -113,6 +113,8 @@ def create_response_formatter_agent(model_client: OpenAIChatCompletionClient) ->
 原始："📍 北京 今天天气：晴，25°C"
 优化："根据最新天气预报，北京今天阳光明媚，气温25度！很适合外出踏青呢～不过要记得涂防晒霜哦！"
 
+重要：请在回复的最后添加"查询完成"来表示任务结束。
+
 现在请美化天气信息。"""
     )
 
