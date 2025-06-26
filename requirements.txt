@@ -1,0 +1,12 @@
+autogen-agentchat>=0.6.1
+autogen-ext[openai]>=0.6.1
+mcp>=1.0.0
+httpx[socks]>=0.25.0
+python-dotenv>=1.0.0
+
+# 测试依赖
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+pytest-html>=3.1.0
+
+# 可选依赖（如果不需要SOCKS代理支持，可以只安装 httpx>=0.25.0）

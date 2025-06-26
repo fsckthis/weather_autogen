@@ -1,0 +1,95 @@
+测试执行日志 - 2025-06-25 21:30:19
+============================================================
+
+STDOUT:
+============================= test session starts ==============================
+platform darwin -- Python 3.12.0, pytest-8.3.3, pluggy-1.5.0 -- /Users/notdp/.pyenv/versions/3.12.0/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/notdp/Developer/python/weather_autogen
+configfile: pytest.ini
+plugins: anyio-4.9.0, asyncio-1.0.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=function, asyncio_default_test_loop_scope=function
+collecting ... collected 53 items
+
+tests/test_api.py::TestAmapAPI::test_amap_api_connection PASSED          [  1%]
+tests/test_api.py::TestAmapAPI::test_amap_predefined_cities PASSED       [  3%]
+tests/test_api.py::TestAmapAPI::test_amap_dynamic_cities PASSED          [  5%]
+tests/test_api.py::TestAmapAPI::test_amap_landmarks PASSED               [  7%]
+tests/test_api.py::TestAmapAPI::test_amap_invalid_input FAILED           [  9%]
+tests/test_api.py::TestCaiyunAPI::test_caiyun_api_connection PASSED      [ 11%]
+tests/test_api.py::TestCaiyunAPI::test_caiyun_data_structure PASSED      [ 13%]
+tests/test_api.py::TestCaiyunAPI::test_caiyun_temperature_data PASSED    [ 15%]
+tests/test_api.py::TestCaiyunAPI::test_caiyun_multi_days PASSED          [ 16%]
+tests/test_api.py::TestCaiyunAPI::test_caiyun_different_cities PASSED    [ 18%]
+tests/test_api.py::TestCaiyunAPI::test_caiyun_invalid_city FAILED        [ 20%]
+tests/test_api.py::TestAPIIntegration::test_geocoding_to_weather_flow PASSED [ 22%]
+tests/test_api.py::TestAPIIntegration::test_coordinate_accuracy PASSED   [ 24%]
+tests/test_api.py::test_api_performance PASSED                           [ 26%]
+tests/test_mcp_server.py::TestMCPWeatherTools::test_query_weather_today_tool PASSED [ 28%]
+tests/test_mcp_server.py::TestMCPWeatherTools::test_query_weather_today_with_city PASSED [ 30%]
+tests/test_mcp_server.py::TestMCPWeatherTools::test_query_weather_tomorrow_tool PASSED [ 32%]
+tests/test_mcp_server.py::TestMCPWeatherTools::test_query_weather_future_days_tool PASSED [ 33%]
+tests/test_mcp_server.py::TestMCPWeatherTools::test_query_weather_future_days_custom_days PASSED [ 35%]
+tests/test_mcp_server.py::TestMCPWeatherTools::test_get_supported_cities_tool PASSED [ 37%]
+tests/test_mcp_server.py::TestMCPWeatherTools::test_get_city_coordinates_tool PASSED [ 39%]
+tests/test_mcp_server.py::TestMCPWeatherTools::test_get_city_coordinates_dynamic PASSED [ 41%]
+tests/test_mcp_server.py::TestMCPWeatherTools::test_invalid_city_handling FAILED [ 43%]
+tests/test_mcp_server.py::TestMCPWeatherTools::test_weather_tool_output_format PASSED [ 45%]
+tests/test_mcp_server.py::TestMCPServerConfiguration::test_server_tools_list PASSED [ 47%]
+tests/test_mcp_server.py::TestMCPServerConfiguration::test_tool_schemas PASSED [ 49%]
+tests/test_mcp_server.py::TestMCPServerConfiguration::test_tool_handler_mapping PASSED [ 50%]
+tests/test_mcp_server.py::TestMCPServerConfiguration::test_tool_call_interface PASSED [ 52%]
+tests/test_mcp_server.py::TestMCPWeatherDataFormat::test_weather_format_completeness PASSED [ 54%]
+tests/test_mcp_server.py::TestMCPWeatherDataFormat::test_weather_format_consistency PASSED [ 56%]
+tests/test_mcp_server.py::test_mcp_tools_integration PASSED              [ 58%]
+tests/test_weather_agents.py::TestWeatherAgents::test_intent_parser_agent_creation PASSED [ 60%]
+tests/test_weather_agents.py::TestWeatherAgents::test_weather_query_agent_creation PASSED [ 62%]
+tests/test_weather_agents.py::TestWeatherAgents::test_response_formatter_agent_creation PASSED [ 64%]
+tests/test_weather_agents.py::TestWeatherAgents::test_simple_weather_agent_creation PASSED [ 66%]
+tests/test_weather_agents.py::TestMCPToolsIntegration::test_get_weather_mcp_tools PASSED [ 67%]
+tests/test_weather_agents.py::TestMCPToolsIntegration::test_mcp_tools_caching PASSED [ 69%]
+tests/test_weather_agents.py::TestAgentSystemMessages::test_intent_parser_system_message PASSED [ 71%]
+tests/test_weather_agents.py::TestAgentSystemMessages::test_weather_query_system_message PASSED [ 73%]
+tests/test_weather_agents.py::TestAgentSystemMessages::test_formatter_system_message PASSED [ 75%]
+tests/test_weather_agents.py::TestAgentConfiguration::test_agent_names_unique PASSED [ 77%]
+tests/test_weather_agents.py::TestAgentConfiguration::test_agent_descriptions PASSED [ 79%]
+tests/test_weather_agents.py::TestAgentConfiguration::test_tool_equipped_agents PASSED [ 81%]
+tests/test_weather_agents.py::TestAgentWorkflow::test_agent_roles_definition PASSED [ 83%]
+tests/test_weather_agents.py::TestAgentWorkflow::test_agent_collaboration_design PASSED [ 84%]
+tests/test_weather_agents.py::TestAgentWorkflow::test_default_city_configuration PASSED [ 86%]
+tests/test_weather_agents.py::TestEnvironmentDependencies::test_openai_api_key_requirement PASSED [ 88%]
+tests/test_weather_agents.py::TestEnvironmentDependencies::test_mcp_server_availability PASSED [ 90%]
+tests/test_weather_agents.py::TestWeatherQueryFunctionality::test_beijing_weather_query PASSED [ 92%]
+tests/test_weather_agents.py::TestWeatherQueryFunctionality::test_shanghai_weather_query PASSED [ 94%]
+tests/test_weather_agents.py::TestWeatherQueryFunctionality::test_dynamic_city_weather_query PASSED [ 96%]
+tests/test_weather_agents.py::TestWeatherQueryFunctionality::test_weather_query_with_advice PASSED [ 98%]
+tests/test_weather_agents.py::test_agent_creation_performance PASSED     [100%]
+
+=================================== FAILURES ===================================
+_____________________ TestAmapAPI.test_amap_invalid_input ______________________
+tests/test_api.py:74: in test_amap_invalid_input
+    assert coords is None, f"无效输入{invalid}应该返回None"
+E   AssertionError: 无效输入xxxxx应该返回None
+E   assert (34.260871, 108.934616) is None
+____________________ TestCaiyunAPI.test_caiyun_invalid_city ____________________
+tests/test_api.py:151: in test_caiyun_invalid_city
+    with pytest.raises(ValueError, match="不支持的城市"):
+E   Failed: DID NOT RAISE <class 'ValueError'>
+________________ TestMCPWeatherTools.test_invalid_city_handling ________________
+tests/test_mcp_server.py:141: in test_invalid_city_handling
+    assert "❌" in content, "应该显示错误信息"
+E   AssertionError: 应该显示错误信息
+E   assert '❌' in '📍 不存在的城市xxx 2025-06-25\n🌤️ 天气：多云\n🌡️ 温度：15°C ~ 22°C\n💧 湿度：93%\n💨 风力：4级\n🌧️ 降水概率：0%\n💡 生活建议：天气适宜，祝您生活愉快'
+=========================== short test summary info ============================
+FAILED tests/test_api.py::TestAmapAPI::test_amap_invalid_input - AssertionError: 无效输入xxxxx应该返回None
+assert (34.260871, 108.934616) is None
+FAILED tests/test_api.py::TestCaiyunAPI::test_caiyun_invalid_city - Failed: DID NOT RAISE <class 'ValueError'>
+FAILED tests/test_mcp_server.py::TestMCPWeatherTools::test_invalid_city_handling - AssertionError: 应该显示错误信息
+assert '❌' in '📍 不存在的城市xxx 2025-06-25\n🌤️ 天气：多云\n🌡️ 温度：15°C ~ 22°C\n💧 湿度：93%\n💨 风力：4级\n🌧️ 降水概率：0%\n💡 生活建议：天气适宜，祝您生活愉快'
+======================== 3 failed, 50 passed in 24.32s =========================
+
+
+STDERR:
+
+
+返回码: 1
