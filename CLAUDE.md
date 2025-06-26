@@ -31,11 +31,11 @@ cp .env.example .env.local
 ### Running the System
 
 ```bash
-# 简洁的天气查询CLI（推荐）
-python weather_cli.py
+# 测试天气 API 功能
+cd mcp_server && python test_weather_api.py
 
-# 交互式查询模式
-python weather_cli.py
+# 测试 MCP 工具（通过 CLI）
+python weather_cli.py "上海今天天气"
 
 # 演示模式
 python weather_cli.py --demo
@@ -46,24 +46,14 @@ python weather_cli.py "今天天气怎么样"
 # 原始多代理协作演示（详细日志）
 python weather_team.py
 
-# 运行 MCP 天气服务器
-cd mcp_server && python weather_mcp_server.py
-
-# 运行单个模块测试
-python weather_agents.py
+# 检查依赖
+pip check
 ```
 
 ### Testing and Development
 
 ```bash
-# 测试天气 API 功能
-cd mcp_server && python test_weather_api.py
-
-# 测试 MCP 工具（通过 CLI）
-python weather_cli.py "上海今天天气"
-
-# 检查依赖
-pip check
+python run_tests.py
 ```
 
 ## Architecture Overview
