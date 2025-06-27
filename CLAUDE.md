@@ -101,6 +101,8 @@ python tests/run_tests.py
 - `tests/` - 测试套件
   - `run_tests.py` - 测试运行脚本（支持交互式模式选择）
   - `test_weather_agents.py` - 代理测试（支持动态模式导入）
+  - `test_api.py` - API测试
+  - `test_mcp_server.py` - MCP服务器测试
   - `reports/YYYYMMDD/` - 测试报告目录（按日期分组）
 - `doc/` - 文档文件夹
   - `cy_weather.md` - 彩云天气 API 详细文档

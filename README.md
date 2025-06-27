@@ -29,6 +29,10 @@ weather_autogen/
 ├── mcp_server/                 # MCP 服务器
 │   └── weather_mcp_server.py   # 彩云天气MCP服务器(支持IP定位)
 ├── tests/                      # 测试套件
+│   ├── run_tests.py            # 测试运行脚本(支持交互式模式选择)
+│   ├── test_weather_agents.py  # 代理测试(支持动态模式导入)
+│   ├── test_api.py             # API测试
+│   ├── test_mcp_server.py      # MCP服务器测试
 │   └── reports/YYYYMMDD/       # 按日期分组的测试报告
 ├── requirements.txt            # 依赖包
 └── README.md                  # 项目文档
@@ -204,6 +208,17 @@ graph TD
 
 ### 🔄 协作模式对比示例
 
+| 特性           | SelectorGroupChat       | Swarm               | Magentic-One        |
+| -------------- | ----------------------- | ------------------- | ------------------- |
+| **配置复杂度** | 复杂选择器函数 (~76 行) | 简单 handoffs 声明  | 零配置，仅需描述    |
+| **协作方式**   | 集中式调度              | 去中心化交接        | 智能自动化协作      |
+| **代理自主性** | 低（被动选择）          | 中（主动交接）      | 高（智能协调）      |
+| **系统管理**   | 手动选择器逻辑          | 声明式 handoffs     | 自动化 Orchestrator |
+| **学习成本**   | 高（复杂逻辑）          | 中（理解 handoffs） | 低（直观描述）      |
+| **调试友好度** | 中（选择器可见）        | 中（交接明确）      | 高（自动化管理）    |
+| **扩展性**     | 低（修改选择器）        | 中（配置 handoffs） | 高（添加描述）      |
+| **代码量**     | 最多                    | 中等                | 最少                |
+
 **相同任务**：`"上海明天天气"`
 
 #### SelectorGroupChat 执行流程
@@ -242,33 +257,6 @@ graph TD
 - `get_user_location_by_ip()` - **新增**：通过 IP 自动获取用户地理位置
 - `get_supported_cities()` - 获取支持的城市列表
 - `get_city_coordinates(city)` - 获取城市坐标信息
-
-## 🔧 自定义扩展 (Magentic-One Mode)
-
-### 添加新的 agent
-
-```python
-def create_new_agent(model_client):
-    return AssistantAgent(
-        name="new_agent",
-        model_client=model_client,
-        description="新代理的清晰描述，帮助 MagenticOneOrchestrator 理解代理职责",
-        system_message="专注于代理核心任务的系统消息，无需协作逻辑"
-    )
-```
-
-### 三种协作模式对比
-
-| 特性           | SelectorGroupChat       | Swarm               | Magentic-One        |
-| -------------- | ----------------------- | ------------------- | ------------------- |
-| **配置复杂度** | 复杂选择器函数 (~76 行) | 简单 handoffs 声明  | 零配置，仅需描述    |
-| **协作方式**   | 集中式调度              | 去中心化交接        | 智能自动化协作      |
-| **代理自主性** | 低（被动选择）          | 中（主动交接）      | 高（智能协调）      |
-| **系统管理**   | 手动选择器逻辑          | 声明式 handoffs     | 自动化 Orchestrator |
-| **学习成本**   | 高（复杂逻辑）          | 中（理解 handoffs） | 低（直观描述）      |
-| **调试友好度** | 中（选择器可见）        | 中（交接明确）      | 高（自动化管理）    |
-| **扩展性**     | 低（修改选择器）        | 中（配置 handoffs） | 高（添加描述）      |
-| **代码量**     | 最多                    | 中等                | 最少                |
 
 ### 添加新的工具
 
