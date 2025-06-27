@@ -1,6 +1,6 @@
-# AutoGen Magentic-One 多代理协作天气查询系统
+# AutoGen 多代理协作天气查询系统
 
-基于 Microsoft AutoGen Magentic-One 框架的多代理协作天气查询系统，支持智能 IP 定位和自动化团队协作机制。现已支持三种不同的协作模式：**SelectorGroupChat**、**Swarm**、**Magentic-One**。
+基于 Microsoft AutoGen 框架的多代理协作天气查询系统，支持智能 IP 定位和多种团队协作机制。现已支持三种不同的协作模式：**SelectorGroupChat**、**Swarm**、**Magentic-One**。
 
 ## 🌟 项目特色
 
@@ -86,66 +86,21 @@ python src/weather_cli.py --demo
 # 注意：源代码模块专注业务逻辑，演示功能统一通过 CLI 提供
 ```
 
-## 🧲 Magentic-One 协作流程
-
-```mermaid
-graph LR
-    A[用户查询] --> B[MagenticOneOrchestrator]
-    B --> C[智能代理选择]
-    C --> D[意图解析代理]
-    D --> E[天气查询代理] 
-    E --> F[响应格式化代理]
-    F --> G[用户 - 完成]
-```
-
-### 🧲 Magentic-One 协作机制
-
-- **智能自动化** - MagenticOneOrchestrator 自动管理代理协作流程
-- **零配置协作** - 无需手动配置 handoffs 或选择器函数
-- **智能任务分配** - 根据代理描述和任务需求自动选择合适的代理
-
-### 协作示例
-
-**用户输入**：`"上海明天天气"`
-
-1. 🧲 **MagenticOneOrchestrator**：
-
-   ```plain
-   分析任务：需要天气查询
-   → 自动选择 intent_parser 开始协作
-   ```
-
-2. 🧠 **意图解析代理**：
-
-   ```plain
-   解析: 城市=上海, 时间=tomorrow, 查询=明天天气
-   → 自动交接给 weather_agent
-   ```
-
-3. 🌤️ **天气查询代理**：
-
-   ```plain
-   调用 query_weather_tomorrow("上海")
-   获取天气数据
-   → 自动交接给 formatter
-   ```
-
-4. ✨ **响应格式化代理**：
-
-   ```plain
-   美化输出 + 添加生活建议
-   → 输出"查询完成"，协作结束
-   ```
-
 ## 🎯 支持的查询类型
 
-| 查询类型 | 示例           | 特殊功能   | Magentic-One 自动协作流程                   |
-| -------- | -------------- | ---------- | ------------------------------------------- |
-| 今日天气 | "今天天气"     | IP 自动定位 | 自动：intent_parser→weather_agent→formatter |
-| 明日天气 | "明天会下雨吗" | IP 自动定位 | 自动：intent_parser→weather_agent→formatter |
-| 未来天气 | "未来三天天气" | IP 自动定位 | 自动：intent_parser→weather_agent→formatter |
-| 城市指定 | "北京明天天气" | 直接查询   | 自动：intent_parser→weather_agent→formatter |
-| 城市指定 | "上海今天天气" | 直接查询   | 自动：intent_parser→weather_agent→formatter |
+| 查询类型 | 示例           | 特殊功能    | 三种协作模式共同流程                  |
+| -------- | -------------- | ----------- | ------------------------------------- |
+| 今日天气 | "今天天气"     | IP 自动定位 | intent_parser→weather_agent→formatter |
+| 明日天气 | "明天会下雨吗" | IP 自动定位 | intent_parser→weather_agent→formatter |
+| 未来天气 | "未来三天天气" | IP 自动定位 | intent_parser→weather_agent→formatter |
+| 城市指定 | "北京明天天气" | 直接查询    | intent_parser→weather_agent→formatter |
+| 城市指定 | "上海今天天气" | 直接查询    | intent_parser→weather_agent→formatter |
+
+**协作差异**：
+
+- **SelectorGroupChat**：选择器函数控制每步转换
+- **Swarm**：代理主动 handoff 交接控制权
+- **Magentic-One**：Orchestrator 智能自动调度
 
 ### 🆕 智能 IP 定位功能
 
@@ -155,33 +110,129 @@ graph LR
 2. 智能匹配到支持的中国城市
 3. 为非中国地区提供友好提示
 
-## 🛠️ 技术架构 (Magentic-One Mode)
+## 🛠️ 技术架构
 
 ### 核心组件
 
-- **WeatherAgentTeam**: Magentic-One 协作管理器，零配置智能协作
-- **意图解析代理**: 分析用户查询意图，专注于任务描述
+- **WeatherAgentTeam**: 协作管理器，支持三种协作模式
+- **意图解析代理**: 分析用户查询意图，提取城市和时间信息
 - **天气查询代理**: 通过 MCP 协议调用天气工具，集成智能定位
 - **响应格式化代理**: 格式化输出结果，提供生活建议
 - **CLI 演示系统**: 统一的命令行接口，支持交互式演示和模式选择
 
-### Magentic-One 协作机制
+### 🤖 协作模式实现
 
-```python
-# 代理配置示例（无需 handoffs 配置）
-intent_parser = AssistantAgent(
-    name="intent_parser",
-    description="专业的意图解析代理，负责分析用户天气查询意图",
-    system_message="...专注于意图解析任务"
-)
+#### 📋 1. SelectorGroupChat - 集中式选择器协作
+
+**核心机制**：中央选择器函数控制代理执行顺序
+
+```mermaid
+graph TD
+    A[用户查询] --> B[SelectorGroupChat]
+    B --> C{选择器函数}
+    C -->|第1步| D[意图解析代理]
+    C -->|第2步| E[天气查询代理]
+    C -->|第3步| F[响应格式化代理]
+    F --> G[返回结果]
 ```
 
-**关键特性:**
+**协作流程**：
 
-- **智能自动化**: MagenticOneOrchestrator 自动管理协作流程
-- **零配置**: 无需 handoffs 或选择器函数配置
-- **智能调度**: 根据代理描述自动选择和协调代理
-- **终止条件**: `MaxMessageTermination(max_messages=10)` | `TextMentionTermination("查询完成")`
+1. **中央调度** - 选择器函数分析消息历史，决定下一个代理
+2. **顺序执行** - 意图解析 → 天气查询 → 响应格式化
+3. **显式控制** - 每步转换都由选择器逻辑明确控制
+
+**特点**：
+
+- ✅ 流程可控，便于调试
+- ✅ 执行顺序明确可预测
+- ❌ 需要编写 76 行选择器逻辑
+- ❌ 扩展时需修改选择器函数
+
+#### 🐝 2. Swarm - 去中心化 handoff 协作
+
+**核心机制**：代理主动调用 handoff 函数交接控制权
+
+```mermaid
+graph TD
+    A[用户查询] --> B[intent_parser]
+    B -->|transfer_to_weather_agent| C[weather_agent]
+    C -->|transfer_to_formatter| D[formatter]
+    D -->|transfer_to_user| E[完成]
+```
+
+**协作流程**：
+
+1. **主动交接** - 每个代理完成任务后主动调用 `transfer_to_xxx()`
+2. **去中心化** - 无中央控制器，代理自主决策下一步
+3. **声明式配置** - 通过 `handoffs` 声明可交接的目标代理
+
+**特点**：
+
+- ✅ 代理自主性强，扩展灵活
+- ✅ 零选择器逻辑，声明式配置
+- ❌ 需要理解 handoff 机制
+- ❌ 调试相对复杂（去中心化）
+
+#### 🧲 3. Magentic-One - 智能自动化团队协作
+
+**核心机制**：MagenticOneOrchestrator 智能分析和自动调度
+
+```mermaid
+graph TD
+    A[用户查询] --> B[MagenticOneOrchestrator]
+    B --> C[智能任务分析]
+    C --> D[自动选择代理]
+    D --> E[意图解析代理]
+    E --> F[天气查询代理]
+    F --> G[响应格式化代理]
+    G --> H[自动终止]
+```
+
+**协作流程**：
+
+1. **智能分析** - Orchestrator 分析任务类型和代理能力
+2. **自动调度** - 根据代理描述自动选择和协调执行
+3. **零配置** - 代理只需专注任务，无需协作逻辑
+
+**特点**：
+
+- ✅ 完全自动化，零协作配置
+- ✅ 智能调度，学习成本最低
+- ✅ 最佳的代码简洁度
+- ⚡ AutoGen 最新推荐模式
+
+### 🔄 协作模式对比示例
+
+**相同任务**：`"上海明天天气"`
+
+#### SelectorGroupChat 执行流程
+
+```plain
+1. 选择器函数：messages.length <= 1 → 选择 intent_parser
+2. intent_parser：解析得到 城市=上海，时间=tomorrow
+3. 选择器函数：last_speaker == intent_parser → 选择 weather_agent
+4. weather_agent：调用 query_weather_tomorrow("上海")
+5. 选择器函数：last_speaker == weather_agent → 选择 formatter
+6. formatter：美化输出 + 生活建议 → 完成
+```
+
+#### Swarm 执行流程
+
+```plain
+1. intent_parser：解析查询 → transfer_to_weather_agent()
+2. weather_agent：获取天气数据 → transfer_to_formatter()
+3. formatter：美化输出 → transfer_to_user() → 完成
+```
+
+#### Magentic-One 执行流程
+
+```plain
+1. MagenticOneOrchestrator：分析任务 → 自动选择 intent_parser
+2. intent_parser：解析查询 → 自动交接 weather_agent
+3. weather_agent：获取数据 → 自动交接 formatter
+4. formatter：输出结果 → 自动终止
+```
 
 ### MCP 工具函数
 
@@ -208,16 +259,16 @@ def create_new_agent(model_client):
 
 ### 三种协作模式对比
 
-| 特性           | SelectorGroupChat      | Swarm               | Magentic-One        |
-| -------------- | ---------------------- | ------------------- | ------------------- |
+| 特性           | SelectorGroupChat       | Swarm               | Magentic-One        |
+| -------------- | ----------------------- | ------------------- | ------------------- |
 | **配置复杂度** | 复杂选择器函数 (~76 行) | 简单 handoffs 声明  | 零配置，仅需描述    |
-| **协作方式**   | 集中式调度             | 去中心化交接        | 智能自动化协作      |
-| **代理自主性** | 低（被动选择）         | 中（主动交接）      | 高（智能协调）      |
-| **系统管理**   | 手动选择器逻辑         | 声明式 handoffs     | 自动化 Orchestrator |
-| **学习成本**   | 高（复杂逻辑）         | 中（理解 handoffs） | 低（直观描述）      |
-| **调试友好度** | 中（选择器可见）       | 中（交接明确）      | 高（自动化管理）    |
-| **扩展性**     | 低（修改选择器）       | 中（配置 handoffs） | 高（添加描述）      |
-| **代码量**     | 最多                   | 中等                | 最少                |
+| **协作方式**   | 集中式调度              | 去中心化交接        | 智能自动化协作      |
+| **代理自主性** | 低（被动选择）          | 中（主动交接）      | 高（智能协调）      |
+| **系统管理**   | 手动选择器逻辑          | 声明式 handoffs     | 自动化 Orchestrator |
+| **学习成本**   | 高（复杂逻辑）          | 中（理解 handoffs） | 低（直观描述）      |
+| **调试友好度** | 中（选择器可见）        | 中（交接明确）      | 高（自动化管理）    |
+| **扩展性**     | 低（修改选择器）        | 中（配置 handoffs） | 高（添加描述）      |
+| **代码量**     | 最多                    | 中等                | 最少                |
 
 ### 添加新的工具
 
@@ -274,13 +325,13 @@ python tests/run_tests.py
 
 ## 📊 项目信息
 
-- **当前协作模式**: AutoGen Magentic-One 智能自动化团队协作
+- **协作模式**: 三种（SelectorGroupChat、Swarm、Magentic-One）
 - **代理数量**: 3 个（意图解析、天气查询、响应格式化）
 - **MCP 工具**: 6 个（包含 IP 定位功能）
 - **支持城市**: 37 个中国主要城市 + 全球 IP 定位
-- **技术栈**: AutoGen Magentic-One + MCP + 彩云天气 API + IP 定位服务
+- **技术栈**: AutoGen 框架 + MCP + 彩云天气 API + IP 定位服务
 - **测试覆盖**: 50 个测试用例，100%通过率
-- **配置简洁度**: 零配置协作，仅需代理描述
+- **配置复杂度**: SelectorGroupChat (76 行) > Swarm (声明式) > Magentic-One (零配置)
 - **架构设计**: 单分支多模式，源代码专注业务逻辑，CLI 统一处理演示
 
 ### 🔀 协作模式选择
@@ -291,7 +342,7 @@ python src/weather_cli.py
 
 # 命令行指定模式
 python src/weather_cli.py --mode selector_groupchat
-python src/weather_cli.py --mode swarm  
+python src/weather_cli.py --mode swarm
 python src/weather_cli.py --mode magentic_one
 ```
 
