@@ -61,16 +61,14 @@ python src/weather_cli.py --demo
 python src/weather_cli.py --mode swarm --demo
 ```
 
-**直接运行特定模式（详细日志）**：
+**其他命令**：
 
 ```bash
-# 查看完整的多代理协作过程
-python src/selector_groupchat/weather_team.py
-python src/swarm/weather_team.py
-python src/magentic_one/weather_team.py
-
 # 检查依赖
 pip check
+
+# 注意：源代码模块已移除演示代码，推荐使用 CLI 进行演示
+# python src/weather_cli.py --demo  # 推荐的演示方式
 ```
 
 ### Testing and Development
@@ -88,15 +86,15 @@ python tests/run_tests.py
 ### Core Files Structure
 
 - `src/` - 核心源代码目录，包含三种协作模式的实现
-  - `weather_cli.py` - **通用命令行界面**（支持三种模式动态选择）
+  - `weather_cli.py` - **通用命令行界面**（支持三种模式动态选择 + 演示功能）
   - `selector_groupchat/` - 集中式选择器协作模式
-    - `weather_team.py` - SelectorGroupChat 协作管理器
+    - `weather_team.py` - SelectorGroupChat 协作管理器（纯业务逻辑）
     - `weather_agents.py` - 基础代理定义和 MCP 工具集成
   - `swarm/` - 去中心化 handoff 协作模式
-    - `weather_team.py` - Swarm 协作管理器
+    - `weather_team.py` - Swarm 协作管理器（纯业务逻辑）
     - `weather_agents.py` - 带 handoff 配置的代理定义
   - `magentic_one/` - 智能自动化团队协作模式
-    - `weather_team.py` - MagenticOneGroupChat 协作管理器
+    - `weather_team.py` - MagenticOneGroupChat 协作管理器（纯业务逻辑）
     - `weather_agents.py` - 专注任务的代理定义
 - `mcp_server/` - MCP 服务器文件夹
   - `weather_mcp_server.py` - 彩云天气 MCP 服务器（真实 API 数据 + IP 定位功能）

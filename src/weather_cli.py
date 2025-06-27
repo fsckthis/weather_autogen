@@ -99,7 +99,7 @@ class SimpleWeatherCLI:
             print("   📋 意图解析代理 → 解析查询意图")
             
             # 执行查询但隐藏详细日志
-            result = await self.team.query_with_collaboration(user_input, show_process=False)
+            result = await self.team.query(user_input, show_process=False)
             
             print("   🌤️  天气查询代理 → 获取天气数据")
             print("   ✨ 响应格式化代理 → 美化输出结果")
