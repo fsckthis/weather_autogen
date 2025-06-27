@@ -11,14 +11,34 @@ import os
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.weather_agents import (
-    create_intent_parser_agent,
-    create_weather_query_agent,
-    create_response_formatter_agent,
-    create_simple_weather_agent,
-    get_weather_mcp_tools
-)
+# 动态导入基于环境变量选择的模式
+def get_weather_module():
+    """根据环境变量获取对应的天气模块"""
+    mode = os.getenv("WEATHER_MODE", "selector_groupchat")
+    
+    if mode == "selector_groupchat":
+        from src.selector_groupchat import weather_agents
+    elif mode == "swarm":
+        from src.swarm import weather_agents
+    elif mode == "magentic_one":
+        from src.magentic_one import weather_agents
+    else:
+        # 默认使用 selector_groupchat
+        from src.selector_groupchat import weather_agents
+    
+    return weather_agents
+
+# 导入对应模式的模块
+weather_agents = get_weather_module()
+
 from autogen_ext.models.openai import OpenAIChatCompletionClient
+
+# 动态获取函数
+create_intent_parser_agent = weather_agents.create_intent_parser_agent
+create_weather_query_agent = weather_agents.create_weather_query_agent
+create_response_formatter_agent = weather_agents.create_response_formatter_agent
+create_simple_weather_agent = weather_agents.create_simple_weather_agent
+get_weather_mcp_tools = weather_agents.get_weather_mcp_tools
 
 class TestWeatherAgents:
     """Weather Agents测试类"""

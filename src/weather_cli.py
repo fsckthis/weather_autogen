@@ -1,29 +1,84 @@
 #!/usr/bin/env python3
 """
-简洁的天气查询CLI
+通用天气查询CLI
+支持三种协作模式：selector_groupchat, swarm, magentic_one
 隐藏复杂的多代理协作日志，只显示关键步骤和结果
 """
 
 import asyncio
 import sys
 import logging
-from .weather_team import WeatherAgentTeam
+import os
 
 # 隐藏复杂的AutoGen日志
 logging.getLogger("autogen_core").setLevel(logging.WARNING)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.basicConfig(level=logging.ERROR, format='')
 
+def choose_mode():
+    """选择协作模式"""
+    print("\n🤖 选择天气系统协作模式:")
+    print("1. selector_groupchat - 集中式选择器协作模式")
+    print("2. swarm - 去中心化 handoff 协作模式") 
+    print("3. magentic_one - 智能自动化团队协作模式")
+    
+    while True:
+        try:
+            choice = input("\n请选择模式 (1-3): ").strip()
+            if choice == "1":
+                return "selector_groupchat"
+            elif choice == "2":
+                return "swarm"
+            elif choice == "3":
+                return "magentic_one"
+            else:
+                print("❌ 无效选择，请输入 1、2 或 3")
+        except KeyboardInterrupt:
+            print("\n👋 再见！")
+            sys.exit(0)
+
 class SimpleWeatherCLI:
     """简洁的天气查询命令行界面"""
     
-    def __init__(self):
+    def __init__(self, mode: str = None):
+        self.mode = mode or choose_mode()
         self.team = None
         
+    def _get_team_class(self):
+        """动态导入对应模式的WeatherAgentTeam"""
+        try:
+            # 添加当前目录到Python路径
+            import os
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            if current_dir not in sys.path:
+                sys.path.insert(0, current_dir)
+            
+            if self.mode == "selector_groupchat":
+                from selector_groupchat.weather_team import WeatherAgentTeam
+            elif self.mode == "swarm":
+                from swarm.weather_team import WeatherAgentTeam
+            elif self.mode == "magentic_one":
+                from magentic_one.weather_team import WeatherAgentTeam
+            else:
+                raise ValueError(f"未知的协作模式: {self.mode}")
+            return WeatherAgentTeam
+        except ImportError as e:
+            print(f"❌ 无法导入 {self.mode} 模式: {e}")
+            sys.exit(1)
+
     async def initialize(self):
         """初始化天气查询团队"""
+        mode_names = {
+            "selector_groupchat": "SelectorGroupChat 集中式选择器",
+            "swarm": "Swarm 去中心化 handoff", 
+            "magentic_one": "Magentic-One 智能自动化"
+        }
+        
         print("🤖 初始化天气查询系统...")
+        print(f"🔧 协作模式: {mode_names.get(self.mode, self.mode)}")
+        
         try:
+            WeatherAgentTeam = self._get_team_class()
             # 使用静默模式初始化，避免重复的协作流程输出
             self.team = WeatherAgentTeam(verbose=False)
             await self.team.initialize()
@@ -124,7 +179,23 @@ class SimpleWeatherCLI:
 
 async def main():
     """主函数"""
-    cli = SimpleWeatherCLI()
+    # 检查环境变量或命令行参数中的模式
+    mode = None
+    
+    # 检查是否有 --mode 参数
+    if "--mode" in sys.argv:
+        mode_index = sys.argv.index("--mode")
+        if mode_index + 1 < len(sys.argv):
+            mode = sys.argv[mode_index + 1]
+            # 移除 --mode 参数
+            sys.argv.pop(mode_index + 1)
+            sys.argv.pop(mode_index)
+    
+    # 检查环境变量
+    if not mode:
+        mode = os.getenv("WEATHER_MODE")
+    
+    cli = SimpleWeatherCLI(mode)
     
     try:
         # 检查命令行参数

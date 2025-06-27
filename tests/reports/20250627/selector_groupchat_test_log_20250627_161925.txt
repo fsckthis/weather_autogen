@@ -1,4 +1,4 @@
-测试执行日志 - 2025-06-27 12:27:08
+测试执行日志 - 2025-06-27 16:20:21
 ============================================================
 
 STDOUT (已过滤teardown错误):
@@ -13,7 +13,7 @@ collecting ... collected 50 items
 
 tests/test_api.py::TestAmapAPI::test_amap_api_connection PASSED          [  2%]
 tests/test_api.py::TestAmapAPI::test_amap_predefined_cities PASSED       [  4%]
-tests/test_api.py::TestAmapAPI::test_amap_dynamic_cities PASSED          [  6%]
+tests/test_api.py::TestAmapAPI::test_amap_dynamic_cities FAILED          [  6%]
 tests/test_api.py::TestAmapAPI::test_amap_invalid_input PASSED           [  8%]
 tests/test_api.py::TestCaiyunAPI::test_caiyun_api_connection PASSED      [ 10%]
 tests/test_api.py::TestCaiyunAPI::test_caiyun_data_structure PASSED      [ 12%]
@@ -85,7 +85,7 @@ tests/test_mcp_server.py:28: in mcp_session
 E   RuntimeError: Attempted to exit cancel scope in a different task than it was entered in
 ---------------------------- Captured stderr setup -----------------------------
 INFO:weather-mcp-server:启动彩云天气 MCP 服务器...
-[06/27/25 12:26:43] INFO     Starting MCP server                  server.py:1168
+[06/27/25 16:19:58] INFO     Starting MCP server                  server.py:1168
                              'weather-mcp-server' with transport                
                              'stdio'                                            
 INFO:FastMCP.fastmcp.server.server:Starting MCP server 'weather-mcp-server' with transport 'stdio'
@@ -103,7 +103,7 @@ tests/test_mcp_server.py:28: in mcp_session
 E   RuntimeError: Attempted to exit cancel scope in a different task than it was entered in
 ---------------------------- Captured stderr setup -----------------------------
 INFO:weather-mcp-server:启动彩云天气 MCP 服务器...
-[06/27/25 12:26:44] INFO     Starting MCP server                  server.py:1168
+[06/27/25 16:19:58] INFO     Starting MCP server                  server.py:1168
                              'weather-mcp-server' with transport                
                              'stdio'                                            
 INFO:FastMCP.fastmcp.server.server:Starting MCP server 'weather-mcp-server' with transport 'stdio'
@@ -123,7 +123,7 @@ tests/test_mcp_server.py:28: in mcp_session
 E   RuntimeError: Attempted to exit cancel scope in a different task than it was entered in
 ---------------------------- Captured stderr setup -----------------------------
 INFO:weather-mcp-server:启动彩云天气 MCP 服务器...
-[06/27/25 12:26:44] INFO     Starting MCP server                  server.py:1168
+[06/27/25 16:19:59] INFO     Starting MCP server                  server.py:1168
                              'weather-mcp-server' with transport                
                              'stdio'                                            
 INFO:FastMCP.fastmcp.server.server:Starting MCP server 'weather-mcp-server' with transport 'stdio'
@@ -144,7 +144,7 @@ tests/test_mcp_server.py:28: in mcp_session
 E   RuntimeError: Attempted to exit cancel scope in a different task than it was entered in
 ---------------------------- Captured stderr setup -----------------------------
 INFO:weather-mcp-server:启动彩云天气 MCP 服务器...
-[06/27/25 12:26:45] INFO     Starting MCP server                  server.py:1168
+[06/27/25 16:20:00] INFO     Starting MCP server                  server.py:1168
                              'weather-mcp-server' with transport                
                              'stdio'                                            
 INFO:FastMCP.fastmcp.server.server:Starting MCP server 'weather-mcp-server' with transport 'stdio'
@@ -165,7 +165,7 @@ tests/test_mcp_server.py:28: in mcp_session
 E   RuntimeError: Attempted to exit cancel scope in a different task than it was entered in
 ---------------------------- Captured stderr setup -----------------------------
 INFO:weather-mcp-server:启动彩云天气 MCP 服务器...
-[06/27/25 12:26:46] INFO     Starting MCP server                  server.py:1168
+[06/27/25 16:20:01] INFO     Starting MCP server                  server.py:1168
                              'weather-mcp-server' with transport                
                              'stdio'                                            
 INFO:FastMCP.fastmcp.server.server:Starting MCP server 'weather-mcp-server' with transport 'stdio'
@@ -186,7 +186,7 @@ tests/test_mcp_server.py:28: in mcp_session
 E   RuntimeError: Attempted to exit cancel scope in a different task than it was entered in
 ---------------------------- Captured stderr setup -----------------------------
 INFO:weather-mcp-server:启动彩云天气 MCP 服务器...
-[06/27/25 12:26:47] INFO     Starting MCP server                  server.py:1168
+[06/27/25 16:20:02] INFO     Starting MCP server                  server.py:1168
                              'weather-mcp-server' with transport                
                              'stdio'                                            
 INFO:FastMCP.fastmcp.server.server:Starting MCP server 'weather-mcp-server' with transport 'stdio'
@@ -206,7 +206,7 @@ tests/test_mcp_server.py:28: in mcp_session
 E   RuntimeError: Attempted to exit cancel scope in a different task than it was entered in
 ---------------------------- Captured stderr setup -----------------------------
 INFO:weather-mcp-server:启动彩云天气 MCP 服务器...
-[06/27/25 12:26:48] INFO     Starting MCP server                  server.py:1168
+[06/27/25 16:20:02] INFO     Starting MCP server                  server.py:1168
                              'weather-mcp-server' with transport                
                              'stdio'                                            
 INFO:FastMCP.fastmcp.server.server:Starting MCP server 'weather-mcp-server' with transport 'stdio'
@@ -226,7 +226,7 @@ tests/test_mcp_server.py:28: in mcp_session
 E   RuntimeError: Attempted to exit cancel scope in a different task than it was entered in
 ---------------------------- Captured stderr setup -----------------------------
 INFO:weather-mcp-server:启动彩云天气 MCP 服务器...
-[06/27/25 12:26:48] INFO     Starting MCP server                  server.py:1168
+[06/27/25 16:20:02] INFO     Starting MCP server                  server.py:1168
                              'weather-mcp-server' with transport                
                              'stdio'                                            
 INFO:FastMCP.fastmcp.server.server:Starting MCP server 'weather-mcp-server' with transport 'stdio'
@@ -235,8 +235,18 @@ INFO:mcp.server.lowlevel.server:Processing request of type CallToolRequest
 INFO:httpx:HTTP Request: GET https://restapi.amap.com/v3/geocode/geo?key=0c3cdb9e7bb232d6d2622684280f746a&address=%E7%81%AB%E6%98%9F%E5%B8%82abc123xyz&output=json "HTTP/1.1 200 OK"
 INFO:weather-mcp-server:✅ 获取城市坐标成功：火星市abc123xyz -> (26.676314, 107.982768)
 INFO:httpx:HTTP Request: GET https://api.caiyunapp.com/v2.6/fBPDVVFH43LOcZ2h/107.982768,26.676314/daily?dailysteps=1 "HTTP/1.1 200 OK"
+=================================== FAILURES ===================================
+_____________________ TestAmapAPI.test_amap_dynamic_cities _____________________
+tests/test_api.py:51: in test_amap_dynamic_cities
+    assert coords is not None, f"动态城市{city}获取坐标失败"
+E   AssertionError: 动态城市丽江获取坐标失败
+E   assert None is not None
+------------------------------ Captured log call -------------------------------
+ERROR    weather-mcp-server:weather_mcp_server.py:150 ❌ 地理编码API调用失败：丽江, 错误：
 =========================== short test summary info ============================
-======================== 50 passed in 41.62s =========================
+FAILED tests/test_api.py::TestAmapAPI::test_amap_dynamic_cities - AssertionError: 动态城市丽江获取坐标失败
+assert None is not None
+=================== 1 failed, 49 passed in 56.08s ====================
 
 
 STDERR:

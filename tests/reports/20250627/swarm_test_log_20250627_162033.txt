@@ -1,4 +1,4 @@
-测试执行日志 - 2025-06-27 12:44:04
+测试执行日志 - 2025-06-27 16:21:21
 ============================================================
 
 STDOUT (已过滤teardown错误):
@@ -61,7 +61,7 @@ tests/test_weather_agents.py::TestAgentConfiguration::test_agent_descriptions PA
 tests/test_weather_agents.py::TestAgentConfiguration::test_tool_equipped_agents PASSED [ 80%]
 tests/test_weather_agents.py::TestAgentWorkflow::test_agent_roles_definition PASSED [ 82%]
 tests/test_weather_agents.py::TestAgentWorkflow::test_agent_collaboration_design PASSED [ 84%]
-tests/test_weather_agents.py::TestAgentWorkflow::test_default_city_configuration PASSED [ 86%]
+tests/test_weather_agents.py::TestAgentWorkflow::test_default_city_configuration FAILED [ 86%]
 tests/test_weather_agents.py::TestEnvironmentDependencies::test_openai_api_key_requirement PASSED [ 88%]
 tests/test_weather_agents.py::TestEnvironmentDependencies::test_mcp_server_availability PASSED [ 90%]
 tests/test_weather_agents.py::TestWeatherQueryFunctionality::test_beijing_weather_query PASSED [ 92%]
@@ -85,7 +85,7 @@ tests/test_mcp_server.py:28: in mcp_session
 E   RuntimeError: Attempted to exit cancel scope in a different task than it was entered in
 ---------------------------- Captured stderr setup -----------------------------
 INFO:weather-mcp-server:启动彩云天气 MCP 服务器...
-[06/27/25 12:43:40] INFO     Starting MCP server                  server.py:1168
+[06/27/25 16:20:57] INFO     Starting MCP server                  server.py:1168
                              'weather-mcp-server' with transport                
                              'stdio'                                            
 INFO:FastMCP.fastmcp.server.server:Starting MCP server 'weather-mcp-server' with transport 'stdio'
@@ -103,7 +103,7 @@ tests/test_mcp_server.py:28: in mcp_session
 E   RuntimeError: Attempted to exit cancel scope in a different task than it was entered in
 ---------------------------- Captured stderr setup -----------------------------
 INFO:weather-mcp-server:启动彩云天气 MCP 服务器...
-[06/27/25 12:43:40] INFO     Starting MCP server                  server.py:1168
+[06/27/25 16:20:57] INFO     Starting MCP server                  server.py:1168
                              'weather-mcp-server' with transport                
                              'stdio'                                            
 INFO:FastMCP.fastmcp.server.server:Starting MCP server 'weather-mcp-server' with transport 'stdio'
@@ -123,7 +123,7 @@ tests/test_mcp_server.py:28: in mcp_session
 E   RuntimeError: Attempted to exit cancel scope in a different task than it was entered in
 ---------------------------- Captured stderr setup -----------------------------
 INFO:weather-mcp-server:启动彩云天气 MCP 服务器...
-[06/27/25 12:43:40] INFO     Starting MCP server                  server.py:1168
+[06/27/25 16:20:58] INFO     Starting MCP server                  server.py:1168
                              'weather-mcp-server' with transport                
                              'stdio'                                            
 INFO:FastMCP.fastmcp.server.server:Starting MCP server 'weather-mcp-server' with transport 'stdio'
@@ -144,7 +144,7 @@ tests/test_mcp_server.py:28: in mcp_session
 E   RuntimeError: Attempted to exit cancel scope in a different task than it was entered in
 ---------------------------- Captured stderr setup -----------------------------
 INFO:weather-mcp-server:启动彩云天气 MCP 服务器...
-[06/27/25 12:43:42] INFO     Starting MCP server                  server.py:1168
+[06/27/25 16:20:59] INFO     Starting MCP server                  server.py:1168
                              'weather-mcp-server' with transport                
                              'stdio'                                            
 INFO:FastMCP.fastmcp.server.server:Starting MCP server 'weather-mcp-server' with transport 'stdio'
@@ -165,7 +165,7 @@ tests/test_mcp_server.py:28: in mcp_session
 E   RuntimeError: Attempted to exit cancel scope in a different task than it was entered in
 ---------------------------- Captured stderr setup -----------------------------
 INFO:weather-mcp-server:启动彩云天气 MCP 服务器...
-[06/27/25 12:43:43] INFO     Starting MCP server                  server.py:1168
+[06/27/25 16:21:00] INFO     Starting MCP server                  server.py:1168
                              'weather-mcp-server' with transport                
                              'stdio'                                            
 INFO:FastMCP.fastmcp.server.server:Starting MCP server 'weather-mcp-server' with transport 'stdio'
@@ -186,7 +186,7 @@ tests/test_mcp_server.py:28: in mcp_session
 E   RuntimeError: Attempted to exit cancel scope in a different task than it was entered in
 ---------------------------- Captured stderr setup -----------------------------
 INFO:weather-mcp-server:启动彩云天气 MCP 服务器...
-[06/27/25 12:43:44] INFO     Starting MCP server                  server.py:1168
+[06/27/25 16:21:00] INFO     Starting MCP server                  server.py:1168
                              'weather-mcp-server' with transport                
                              'stdio'                                            
 INFO:FastMCP.fastmcp.server.server:Starting MCP server 'weather-mcp-server' with transport 'stdio'
@@ -206,7 +206,7 @@ tests/test_mcp_server.py:28: in mcp_session
 E   RuntimeError: Attempted to exit cancel scope in a different task than it was entered in
 ---------------------------- Captured stderr setup -----------------------------
 INFO:weather-mcp-server:启动彩云天气 MCP 服务器...
-[06/27/25 12:43:44] INFO     Starting MCP server                  server.py:1168
+[06/27/25 16:21:01] INFO     Starting MCP server                  server.py:1168
                              'weather-mcp-server' with transport                
                              'stdio'                                            
 INFO:FastMCP.fastmcp.server.server:Starting MCP server 'weather-mcp-server' with transport 'stdio'
@@ -226,7 +226,7 @@ tests/test_mcp_server.py:28: in mcp_session
 E   RuntimeError: Attempted to exit cancel scope in a different task than it was entered in
 ---------------------------- Captured stderr setup -----------------------------
 INFO:weather-mcp-server:启动彩云天气 MCP 服务器...
-[06/27/25 12:43:45] INFO     Starting MCP server                  server.py:1168
+[06/27/25 16:21:01] INFO     Starting MCP server                  server.py:1168
                              'weather-mcp-server' with transport                
                              'stdio'                                            
 INFO:FastMCP.fastmcp.server.server:Starting MCP server 'weather-mcp-server' with transport 'stdio'
@@ -235,8 +235,14 @@ INFO:mcp.server.lowlevel.server:Processing request of type CallToolRequest
 INFO:httpx:HTTP Request: GET https://restapi.amap.com/v3/geocode/geo?key=0c3cdb9e7bb232d6d2622684280f746a&address=%E7%81%AB%E6%98%9F%E5%B8%82abc123xyz&output=json "HTTP/1.1 200 OK"
 INFO:weather-mcp-server:✅ 获取城市坐标成功：火星市abc123xyz -> (26.676314, 107.982768)
 INFO:httpx:HTTP Request: GET https://api.caiyunapp.com/v2.6/fBPDVVFH43LOcZ2h/107.982768,26.676314/daily?dailysteps=1 "HTTP/1.1 200 OK"
+=================================== FAILURES ===================================
+______________ TestAgentWorkflow.test_default_city_configuration _______________
+tests/test_weather_agents.py:341: in test_default_city_configuration
+    assert "北京" in system_msg or "默认" in system_msg
+E   assert ('北京' in '你是意图解析专家。你的任务是分析用户的天气查询并提取关键信息。\n\n任务：\n1. 识别用户想查询的时间（今天/明天/未来几天）\n2. 提取城市名称（如果用户没有明确指定城市，输出"未指定"）\n3. 确定查询类型\n\n输出格式：请严格按照以下格式回复：\n城市：[城市名或"未指定"]\n时间：[today/tomorrow/future]\n查询：[简要描述用户想查询什么]\n\n示例：\n用户："今天天气怎么样？"\n→ 城市：未指定\n  时间：today\n  查询：查询今天的天气\n\n用户："上海明天天气"\n→ 城市：上海\n  时间：tomorrow\n  查询：查询上海明天的天气' or '默认' in '你是意图解析专家。你的任务是分析用户的天气查询并提取关键信息。\n\n任务：\n1. 识别用户想查询的时间（今天/明天/未来几天）\n2. 提取城市名称（如果用户没有明确指定城市，输出"未指定"）\n3. 确定查询类型\n\n输出格式：请严格按照以下格式回复：\n城市：[城市名或"未指定"]\n时间：[today/tomorrow/future]\n查询：[简要描述用户想查询什么]\n\n示例：\n用户："今天天气怎么样？"\n→ 城市：未指定\n  时间：today\n  查询：查询今天的天气\n\n用户："上海明天天气"\n→ 城市：上海\n  时间：tomorrow\n  查询：查询上海明天的天气')
 =========================== short test summary info ============================
-======================== 50 passed in 42.26s =========================
+FAILED tests/test_weather_agents.py::TestAgentWorkflow::test_default_city_configuration - assert ('北京' in '你是意图解析专家。你的任务是分析用户的天气查询并提取关键信息。\n\n任务：\n1. 识别用户想查询的时间（今天/明天/未来几天）\n2. 提取城市名称（如果用户没有明确指定城市，输出"未指定"）\n3. 确定查询类型\n\n输出格式：请严格按照以下格式回复：\n城市：[城市名或"未指定"]\n时间：[today/tomorrow/future]\n查询：[简要描述用户想查询什么]\n\n示例：\n用户："今天天气怎么样？"\n→ 城市：未指定\n  时间：today\n  查询：查询今天的天气\n\n用户："上海明天天气"\n→ 城市：上海\n  时间：tomorrow\n  查询：查询上海明天的天气' or '默认' in '你是意图解析专家。你的任务是分析用户的天气查询并提取关键信息。\n\n任务：\n1. 识别用户想查询的时间（今天/明天/未来几天）\n2. 提取城市名称（如果用户没有明确指定城市，输出"未指定"）\n3. 确定查询类型\n\n输出格式：请严格按照以下格式回复：\n城市：[城市名或"未指定"]\n时间：[today/tomorrow/future]\n查询：[简要描述用户想查询什么]\n\n示例：\n用户："今天天气怎么样？"\n→ 城市：未指定\n  时间：today\n  查询：查询今天的天气\n\n用户："上海明天天气"\n→ 城市：上海\n  时间：tomorrow\n  查询：查询上海明天的天气')
+=================== 1 failed, 49 passed in 47.32s ====================
 
 
 STDERR:
