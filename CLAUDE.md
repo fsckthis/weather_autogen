@@ -113,12 +113,25 @@ def create_new_agent(model_client: OpenAIChatCompletionClient) -> AssistantAgent
 
 ### Adding New Tools
 
-在 MCP 服务器中添加新工具：
+**FastMCP 版本** - 在 MCP 服务器中添加新工具：
 
-1. 在 `mcp_server/weather_mcp_server.py` 中添加工具处理函数
-2. 在 `@server.list_tools()` 中注册工具
-3. 在 `@server.call_tool()` 中添加调用逻辑
+1. 在 `mcp_server/weather_mcp_server.py` 中使用 `@mcp.tool()` 装饰器定义新工具
+2. 函数签名自动生成工具 Schema，支持类型提示
+3. docstring 自动生成工具描述
 4. AutoGen 会自动发现并使用新工具
+
+```python
+@mcp.tool()
+async def new_weather_tool(city: str = "北京", param: int = 5) -> str:
+    """新工具描述
+    
+    Args:
+        city: 城市名称
+        param: 参数说明
+    """
+    # 工具实现
+    return "结果"
+```
 
 ### Modifying Collaboration Flow
 
@@ -129,6 +142,7 @@ def create_new_agent(model_client: OpenAIChatCompletionClient) -> AssistantAgent
 - `autogen-agentchat>=0.6.1` - AutoGen 核心框架
 - `autogen-ext[openai]>=0.6.1` - OpenAI 集成扩展
 - `mcp>=1.0.0` - Anthropic MCP Python SDK
+- `fastmcp>=2.8.1` - FastMCP 框架（简化 MCP 开发）
 - `httpx>=0.25.0` - HTTP 客户端库
 
 ## Important Notes
@@ -169,10 +183,11 @@ def create_new_agent(model_client: OpenAIChatCompletionClient) -> AssistantAgent
 - **进程隔离**：每次工具调用启动独立的 MCP 服务器进程
 - 日志显示 MCP 协议消息：`Processing request of type ListToolsRequest`
 
-### MCP 天气服务器
+### MCP 天气服务器（FastMCP 版本）
 
-- `weather_mcp_server.py` 集成彩云天气真实 API
-- 支持 37 个中国主要城市
+- `weather_mcp_server.py` 使用 FastMCP 框架
+- 支持 37 个中国主要城市，集成彩云天气真实 API
 - **注意：彩云天气 API 有频率限制，测试时请控制调用频率**
 - API 失败时会返回明确的错误信息而非降级数据
 - 使用标准 MCP 协议，可与 Claude Desktop 等客户端集成
+- FastMCP 提供装饰器模式，自动类型推断和 Schema 生成
