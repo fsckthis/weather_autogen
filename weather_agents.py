@@ -37,50 +37,75 @@ def create_intent_parser_agent(model_client: OpenAIChatCompletionClient) -> Assi
 
 任务：
 1. 识别用户想查询的时间（今天/明天/未来几天）
-2. 提取城市名称（如果没有则默认"北京"）
+2. 提取城市名称（如果用户没有明确指定城市，输出"未指定"）
 3. 确定查询类型
 
 输出格式：请严格按照以下格式回复，不要添加其他内容：
-城市：[城市名]
+城市：[城市名或"未指定"]
 时间：[today/tomorrow/future]
 查询：[简要描述用户想查询什么]
 
 示例：
-用户："今天天气怎么样？"
-→ 城市：北京
-   时间：today
-   查询：查询北京今天的天气
+用户："今天天气怎么样？"（没有指定城市）
+→ 城市：未指定
+  时间：today
+  查询：查询今天的天气
 
-用户："上海明天天气"
+用户："上海明天天气"（明确指定了上海）
 → 城市：上海
-   时间：tomorrow
-   查询：查询上海明天的天气
+  时间：tomorrow
+  查询：查询上海明天的天气
+
+用户："北京未来三天天气预报"
+→ 城市：北京
+  时间：future
+  查询：查询北京未来几天的天气
 
 现在请分析用户的查询意图。"""
     )
 
 
 async def create_weather_query_agent(model_client: OpenAIChatCompletionClient) -> AssistantAgent:
-    """创建天气查询代理 - 执行具体查询（使用 MCP 工具）"""
+    """创建天气查询代理 - 执行具体查询（使用 MCP 工具），支持自动IP定位"""
     mcp_tools = await get_weather_mcp_tools()
     
     return AssistantAgent(
         name="weather_agent",
         model_client=model_client,
-        description="执行具体的天气查询操作",
+        description="执行具体的天气查询操作，支持自动IP定位",
         tools=mcp_tools,
-        system_message="""你是天气查询执行专家。根据意图解析的结果，调用相应的工具获取天气信息。
+        system_message="""你是智能天气查询执行专家。根据意图解析的结果，调用相应的工具获取天气信息。
+
+处理流程：
+1. 检查意图解析的城市信息
+2. 如果城市是"未指定"，先调用 get_user_location_by_ip() 获取用户位置
+3. 根据时间选择合适的天气查询工具
+4. 返回天气查询结果
+
+城市处理规则：
+- 如果城市是"未指定"：调用 get_user_location_by_ip() 自动定位
+- 如果自动定位成功：从定位结果中提取城市名用于天气查询
+- 如果自动定位失败：使用默认城市"北京"
 
 工具使用规则：
 - 时间是"today"：使用 query_weather_today(city)
 - 时间是"tomorrow"：使用 query_weather_tomorrow(city)
 - 时间是"future"：使用 query_weather_future_days(city, days=3)
 
+处理示例：
+意图解析结果："城市：未指定，时间：today"
+→ 1. 调用 get_user_location_by_ip() 获取位置
+→ 2. 从定位结果提取城市名（如"上海"）
+→ 3. 调用 query_weather_today("上海")
+→ 4. 返回天气结果
+
+意图解析结果："城市：北京，时间：tomorrow"
+→ 直接调用 query_weather_tomorrow("北京")
+
 重要：
-1. 严格按照解析结果选择工具
-2. 必须传入城市参数
-3. 直接调用工具，获取结果
-4. 不要修改工具返回的结果格式
+1. 严格按照解析结果和定位结果选择工具
+2. 处理自动定位的完整流程
+3. 不要修改工具返回的结果格式
 
 现在请根据意图解析结果查询天气。"""
     )

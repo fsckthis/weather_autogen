@@ -371,6 +371,57 @@ async def get_city_coordinates(city: str = "北京") -> str:
         logger.error(f"获取城市坐标失败: {e}")
         return f"❌ 获取{city}坐标失败: {str(e)}"
 
+@mcp.tool()
+async def get_user_location_by_ip() -> str:
+    """通过IP地址获取用户当前地理位置
+    
+    当用户没有指定城市时，可以使用此工具自动获取用户所在城市
+    """
+    try:
+        # 使用 ipapi.co 免费服务获取IP定位
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get("https://ipapi.co/json/")
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            # 提取地理位置信息
+            country = data.get("country_name", "")
+            region = data.get("region", "")
+            city = data.get("city", "")
+            ip = data.get("ip", "")
+            
+            # 如果不是中国，返回提示
+            if country != "China":
+                return f"📍 检测到您的位置：{country} {region} {city}\n⚠️ 当前天气服务主要支持中国城市，建议手动指定中国城市名称查询。"
+            
+            # 中国城市处理
+            if city:
+                # 尝试匹配已知城市
+                matched_city = None
+                city_clean = city.replace("市", "").replace("区", "").replace("县", "")
+                
+                # 先检查是否在支持列表中
+                for supported_city in CITY_COORDINATES.keys():
+                    if city_clean in supported_city or supported_city in city_clean:
+                        matched_city = supported_city
+                        break
+                
+                if matched_city:
+                    return f"📍 已自动定位到：{matched_city}\n🌐 您的IP：{ip}\n✅ 将为您查询 {matched_city} 的天气信息"
+                else:
+                    # 如果不在预设列表中，尝试使用原始城市名
+                    return f"📍 已定位到：{city}\n🌐 您的IP：{ip}\n💡 将尝试查询 {city} 的天气信息"
+            else:
+                return f"📍 无法精确定位城市\n🌐 您的IP：{ip}\n💡 建议手动指定城市名称，如：北京、上海等"
+                
+    except httpx.HTTPError as e:
+        logger.error(f"IP定位服务请求失败: {e}")
+        return "❌ IP定位服务暂时不可用，请手动指定城市名称"
+    except Exception as e:
+        logger.error(f"IP定位失败: {e}")
+        return f"❌ 自动定位失败: {str(e)}，请手动指定城市名称"
+
 # 运行服务器
 if __name__ == "__main__":
     logger.info("启动彩云天气 MCP 服务器...")
