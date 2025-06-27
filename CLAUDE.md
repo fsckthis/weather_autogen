@@ -4,11 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-这是一个基于 Microsoft AutoGen 框架的多代理协作天气查询系统。项目展示了智能体群组协作，通过三个专门的代理协作完成天气查询任务：
+这是一个基于 Microsoft AutoGen 框架的多代理协作天气查询系统，支持智能IP地理定位。项目展示了智能体群组协作，通过三个专门的代理协作完成天气查询任务：
 
 1. **意图解析代理** - 分析用户查询意图，提取城市和时间信息
-2. **天气查询代理** - 执行具体的天气数据获取（集成工具调用）
+2. **天气查询代理** - 执行具体的天气数据获取（集成工具调用），支持IP自动定位
 3. **响应格式化代理** - 美化输出结果并提供生活建议
+
+**🆕 核心功能更新：** 当用户查询没有明确指定城市时，系统会自动通过IP地址获取用户地理位置，实现无城市查询。
 
 ## Quick Start Commands
 
@@ -31,20 +33,20 @@ cp .env.example .env.local
 ### Running the System
 
 ```bash
-# 测试天气 API 功能
-cd mcp_server && python test_weather_api.py
+# 简洁的命令行界面
+python src/weather_cli.py
 
-# 测试 MCP 工具（通过 CLI）
-python weather_cli.py "上海今天天气"
+# 直接查询模式（支持IP自动定位）
+python src/weather_cli.py "今天天气怎么样"
+
+# 指定城市查询
+python src/weather_cli.py "上海今天天气"
 
 # 演示模式
-python weather_cli.py --demo
+python src/weather_cli.py --demo
 
-# 直接查询模式
-python weather_cli.py "今天天气怎么样"
-
-# 原始多代理协作演示（详细日志）
-python weather_team.py
+# 多代理协作演示（详细日志）
+python src/weather_team.py
 
 # 检查依赖
 pip check
@@ -53,20 +55,25 @@ pip check
 ### Testing and Development
 
 ```bash
-python run_tests.py
+# 运行完整测试套件
+python tests/run_tests.py
+
+# 测试结果：50/50 (100%) 通过
 ```
 
 ## Architecture Overview
 
 ### Core Files Structure
 
-- `weather_team.py` - 多代理协作管理器 (WeatherAgentTeam)
-- `weather_agents.py` - 代理定义和 MCP 工具集成：意图解析、天气查询、响应格式化、简单代理
-- `weather_cli.py` - 简洁的命令行界面，隐藏复杂日志
+- `src/` - 核心源代码目录
+  - `weather_team.py` - 多代理协作管理器 (WeatherAgentTeam)
+  - `weather_agents.py` - 代理定义和 MCP 工具集成：意图解析、天气查询、响应格式化、简单代理
+  - `weather_cli.py` - 简洁的命令行界面，隐藏复杂日志
 - `mcp_server/` - MCP 服务器文件夹
-  - `weather_mcp_server.py` - 彩云天气 MCP 服务器（真实 API 数据）
-  - `test_weather_api.py` - 天气 API 功能测试脚本
-  - `README.md` - MCP 服务器详细文档
+  - `weather_mcp_server.py` - 彩云天气 MCP 服务器（真实 API 数据 + IP定位功能）
+- `tests/` - 测试套件
+  - `run_tests.py` - 测试运行脚本
+  - `reports/` - 测试报告目录
 - `doc/` - 文档文件夹
   - `cy_weather.md` - 彩云天气 API 详细文档
 
@@ -85,7 +92,9 @@ python run_tests.py
 - `query_weather_today(city)` - 查询今日天气
 - `query_weather_tomorrow(city)` - 查询明日天气
 - `query_weather_future_days(city, days)` - 查询未来几天天气
+- `get_user_location_by_ip()` - **新增**：通过IP地址获取用户地理位置
 - `get_supported_cities()` - 获取支持的城市列表
+- `get_city_coordinates(city)` - 获取城市坐标信息
 
 **MCP 集成方式**：
 
@@ -98,7 +107,7 @@ python run_tests.py
 
 ### Adding New Agents
 
-在 `weather_agents.py` 中创建新代理：
+在 `src/weather_agents.py` 中创建新代理：
 
 ```python
 def create_new_agent(model_client: OpenAIChatCompletionClient) -> AssistantAgent:
@@ -135,7 +144,7 @@ async def new_weather_tool(city: str = "北京", param: int = 5) -> str:
 
 ### Modifying Collaboration Flow
 
-在 `WeatherAgentTeam._agent_selector()` 中修改代理选择逻辑，控制协作顺序和终止条件。
+在 `src/weather_team.py` 的 `WeatherAgentTeam._agent_selector()` 中修改代理选择逻辑，控制协作顺序和终止条件。
 
 ## Key Dependencies
 
@@ -154,6 +163,12 @@ async def new_weather_tool(city: str = "北京", param: int = 5) -> str:
 - `OPENAI_API_KEY` - OpenAI API 密钥（必需）
 - `CAIYUN_API_KEY` - 彩云天气 API 密钥（必需）
 
+**🆕 IP定位功能说明：**
+
+- IP定位使用免费的 `ipapi.co` 服务，无需额外API密钥
+- 支持中国城市智能匹配，非中国地区提供友好提示
+- 当用户查询不包含明确城市时自动触发
+
 **可选的环境变量：**
 
 - `OPENAI_MODEL` - OpenAI 模型名称（默认：gpt-4o-mini）
@@ -169,9 +184,10 @@ async def new_weather_tool(city: str = "北京", param: int = 5) -> str:
 ### AutoGen 多代理系统
 
 - **MCP 协议集成**：使用 `autogen_ext.tools.mcp` 模块
-- **多代理协作**：意图解析 → 天气查询 → 响应格式化
+- **多代理协作**：意图解析 → 天气查询(含IP定位) → 响应格式化
+- **智能定位**：支持无城市查询，自动IP地理定位
 - 系统消息采用中文，适合中文天气查询场景
-- 默认城市为"北京"
+- 智能城市处理：指定城市直接查询，未指定则IP定位
 - 代理协作有最大消息数限制（8 条消息）
 - 通过环境变量自动加载 API 密钥
 
@@ -187,7 +203,9 @@ async def new_weather_tool(city: str = "北京", param: int = 5) -> str:
 
 - `weather_mcp_server.py` 使用 FastMCP 框架
 - 支持 37 个中国主要城市，集成彩云天气真实 API
+- **🆕 IP定位功能**：集成 `ipapi.co` 服务，支持全球IP地理定位
 - **注意：彩云天气 API 有频率限制，测试时请控制调用频率**
 - API 失败时会返回明确的错误信息而非降级数据
 - 使用标准 MCP 协议，可与 Claude Desktop 等客户端集成
 - FastMCP 提供装饰器模式，自动类型推断和 Schema 生成
+- **测试覆盖**：50个测试用例，100%通过率

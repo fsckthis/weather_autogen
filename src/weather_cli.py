@@ -7,7 +7,7 @@
 import asyncio
 import sys
 import logging
-from weather_team import WeatherAgentTeam
+from .weather_team import WeatherAgentTeam
 
 # 隐藏复杂的AutoGen日志
 logging.getLogger("autogen_core").setLevel(logging.WARNING)

@@ -12,7 +12,7 @@ from autogen_agentchat.conditions import TextMentionTermination, MaxMessageTermi
 from autogen_agentchat.ui import Console
 from autogen_agentchat.messages import BaseAgentEvent, BaseChatMessage
 from autogen_ext.models.openai import OpenAIChatCompletionClient
-from weather_agents import (
+from .weather_agents import (
     create_intent_parser_agent,
     create_weather_query_agent,
     create_response_formatter_agent

@@ -11,7 +11,7 @@ import os
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from weather_agents import (
+from src.weather_agents import (
     create_intent_parser_agent,
     create_weather_query_agent,
     create_response_formatter_agent,

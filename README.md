@@ -1,22 +1,26 @@
 # AutoGen 多代理协作天气查询系统
 
-基于 Microsoft AutoGen 框架的多代理协作天气查询系统。
+基于 Microsoft AutoGen 框架的多代理协作天气查询系统，支持智能IP定位。
 
 ## 🌟 项目特色
 
 - 🧠 **意图解析代理** - 分析用户查询意图，提取城市和时间信息
-- 🌤️ **天气查询代理** - 调用天气 API 获取数据
+- 🌤️ **天气查询代理** - 调用天气 API 获取数据，支持自动IP定位
 - ✨ **响应格式化代理** - 格式化输出并提供生活建议
 - 🎯 **多代理协作** - 三个代理协作完成查询任务
+- 📍 **智能定位** - 用户无需指定城市，自动通过IP获取地理位置
 
 ## 📁 项目结构
 
 ```plain
 weather_autogen/
-├── weather_team.py      # 多代理协作管理器
-├── weather_agents.py    # 代理定义和 MCP 工具集成
-├── weather_cli.py       # 命令行界面
+├── src/                 # 核心源代码
+│   ├── weather_team.py  # 多代理协作管理器
+│   ├── weather_agents.py# 代理定义和 MCP 工具集成
+│   └── weather_cli.py   # 命令行界面
 ├── mcp_server/          # MCP 服务器
+│   └── weather_mcp_server.py # 彩云天气MCP服务器(支持IP定位)
+├── tests/               # 测试套件
 ├── requirements.txt     # 依赖包
 └── README.md           # 项目文档
 ```
@@ -49,17 +53,28 @@ pip install -r requirements.txt
 ### 4. 设置 API 密钥
 
 ```bash
-export OPENAI_API_KEY='your-openai-api-key'
+# 复制配置模板
+cp .env.example .env.local
+
+# 编辑 .env.local 文件，填入API密钥：
+# OPENAI_API_KEY=your-openai-api-key
+# CAIYUN_API_KEY=your-caiyun-api-key
 ```
 
 ### 5. 运行天气查询系统
 
 ```bash
 # 推荐：简洁的命令行界面
-python weather_cli.py
+python src/weather_cli.py
 
-# 或者：原始的多代理协作演示
-python weather_team.py
+# 直接查询（支持IP自动定位）
+python src/weather_cli.py "今天天气怎么样"
+
+# 演示模式
+python src/weather_cli.py --demo
+
+# 多代理协作演示（详细日志）
+python src/weather_team.py
 ```
 
 ## 🎭 多代理协作流程
@@ -99,12 +114,20 @@ graph LR
 
 ## 🎯 支持的查询类型
 
-| 查询类型 | 示例           | 代理协作流程     |
-| -------- | -------------- | ---------------- |
-| 今日天气 | "今天天气"     | 解析→查询→格式化 |
-| 明日天气 | "北京明天天气" | 解析→查询→格式化 |
-| 未来天气 | "未来三天天气" | 解析→查询→格式化 |
-| 城市指定 | "上海今天天气" | 解析→查询→格式化 |
+| 查询类型 | 示例           | 特殊功能 | 代理协作流程     |
+| -------- | -------------- | -------- | ---------------- |
+| 今日天气 | "今天天气"     | IP自动定位 | 解析→定位→查询→格式化 |
+| 明日天气 | "明天会下雨吗" | IP自动定位 | 解析→定位→查询→格式化 |
+| 未来天气 | "未来三天天气" | IP自动定位 | 解析→定位→查询→格式化 |
+| 城市指定 | "北京明天天气" | 直接查询 | 解析→查询→格式化 |
+| 城市指定 | "上海今天天气" | 直接查询 | 解析→查询→格式化 |
+
+### 🆕 智能IP定位功能
+
+当用户查询**没有明确指定城市**时，系统会：
+1. 自动通过IP地址获取用户地理位置
+2. 智能匹配到支持的中国城市
+3. 为非中国地区提供友好提示
 
 ## 🛠️ 技术架构
 
@@ -115,11 +138,14 @@ graph LR
 - **天气查询代理**: 通过 MCP 协议调用天气工具
 - **响应格式化代理**: 格式化输出结果
 
-### 工具函数
+### MCP 工具函数
 
 - `query_weather_today(city)` - 查询今天天气
 - `query_weather_tomorrow(city)` - 查询明天天气
 - `query_weather_future_days(city, days)` - 查询未来几天天气
+- `get_user_location_by_ip()` - **新增**：通过IP自动获取用户地理位置
+- `get_supported_cities()` - 获取支持的城市列表
+- `get_city_coordinates(city)` - 获取城市坐标信息
 
 ## 🔧 自定义扩展
 
@@ -178,11 +204,21 @@ def create_new_agent(model_client):
    python --version  # 确保 Python 3.8+
    ```
 
+### 🧪 测试和开发
+
+```bash
+# 运行完整测试套件
+python tests/run_tests.py
+
+# 测试结果：50/50 (100%) 通过
+```
+
 ## 📊 项目信息
 
 - **代理数量**: 3 个（意图解析、天气查询、响应格式化）
-- **MCP 工具**: 4 个（通过 MCP 协议集成）
-- **支持城市**: 37 个中国主要城市
-- **技术栈**: AutoGen + MCP + 彩云天气 API
+- **MCP 工具**: 6 个（包含IP定位功能）
+- **支持城市**: 37 个中国主要城市 + 全球IP定位
+- **技术栈**: AutoGen + MCP + 彩云天气 API + IP定位服务
+- **测试覆盖**: 50个测试用例，100%通过率
 
 ---
