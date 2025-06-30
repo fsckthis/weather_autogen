@@ -46,24 +46,28 @@ class WeatherAgentTeam:
         """初始化所有代理和 Swarm 团队"""
         
         # 创建三个专门的代理（每个代理都配置了 handoffs）
-        self.intent_parser = create_intent_parser_agent(self.model_client)
+        self.intent_parser = await create_intent_parser_agent(self.model_client)
         self.weather_agent = await create_weather_query_agent(self.model_client)
         self.formatter = create_response_formatter_agent(self.model_client)
 
         # 创建 Swarm 协作团队
         # HandoffTermination: 当有代理交接给 'user' 时停止
-        # TextMentionTermination: 当提到 'TERMINATE' 时停止
-        termination = HandoffTermination(target="user") | TextMentionTermination("TERMINATE")
+        # TextMentionTermination: 当提到 '查询完成' 时停止
+        termination = HandoffTermination(target="user") | TextMentionTermination("查询完成")
         
         self.swarm_team = Swarm(
             participants=[self.intent_parser, self.weather_agent, self.formatter],
             termination_condition=termination
         )
     
-    async def query(self, user_input: str, show_process: bool = True) -> str:
+    async def query(self, user_input: str, show_process: bool = None) -> str:
         """执行天气查询"""
         if not self.swarm_team:
             await self.initialize()
+        
+        # 如果没有明确指定，检查环境变量，否则默认为 False
+        if show_process is None:
+            show_process = False
             
         if show_process:
             print(f"\n{'='*60}")

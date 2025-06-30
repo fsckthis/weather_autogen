@@ -45,11 +45,11 @@ class WeatherAgentTeam:
     async def initialize(self, show_init_message=True):
         """初始化所有代理和 Magentic-One 团队"""
         
-        self.intent_parser = create_intent_parser_agent(self.model_client)
+        self.intent_parser = await create_intent_parser_agent(self.model_client)
         self.weather_agent = await create_weather_query_agent(self.model_client)
         self.formatter = create_response_formatter_agent(self.model_client)
       
-        termination = MaxMessageTermination(max_messages=10) | TextMentionTermination("查询完成")
+        termination = MaxMessageTermination(max_messages=20) | TextMentionTermination("查询完成")
         
         self.magentic_team = MagenticOneGroupChat(
             participants=[self.intent_parser, self.weather_agent, self.formatter],
@@ -57,10 +57,14 @@ class WeatherAgentTeam:
             termination_condition=termination
         )
     
-    async def query(self, user_input: str, show_process: bool = True) -> str:
+    async def query(self, user_input: str, show_process: bool = None) -> str:
         """执行天气查询"""
         if not self.magentic_team:
             await self.initialize()
+        
+        # 如果没有明确指定，检查环境变量，否则默认为 False
+        if show_process is None:
+            show_process = False
             
         if show_process:
             print(f"\n{'='*60}")

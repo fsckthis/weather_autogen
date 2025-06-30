@@ -27,35 +27,52 @@ async def get_weather_mcp_tools():
     
     return _mcp_tools
 
-def create_intent_parser_agent(model_client: OpenAIChatCompletionClient) -> AssistantAgent:
-    """创建意图解析代理 - Swarm 版本，解析完成后自动交接给天气查询代理"""
+async def create_intent_parser_agent(model_client: OpenAIChatCompletionClient) -> AssistantAgent:
+    """创建意图解析代理 - Swarm 版本，负责意图解析和IP定位"""
+    mcp_tools = await get_weather_mcp_tools()
+    
     return AssistantAgent(
         name="intent_parser",
         model_client=model_client,
         handoffs=["weather_agent"],  # 可以交接给天气查询代理
-        description="解析用户的天气查询意图，完成后交接给天气查询代理",
-        system_message="""你是意图解析专家。你的任务是分析用户的天气查询并提取关键信息。
+        tools=mcp_tools,
+        description="专业的意图解析代理，负责分析用户天气查询意图并处理IP定位",
+        system_message="""你是智能意图解析专家。分析用户查询并提供明确的城市信息。
 
-任务：
-1. 识别用户想查询的时间（今天/明天/未来几天）
-2. 提取城市名称（如果用户没有明确指定城市，输出"未指定"）
-3. 确定查询类型
+📋 **处理流程：**
 
-输出格式：请严格按照以下格式回复：
-城市：[城市名或"未指定"]
+**第1步：检查城市信息**
+- 如果查询包含明确城市名（如"北京"、"Tokyo"、"纽约"） → 使用该城市
+- 如果查询没有城市名 → 执行第2步
+
+**第2步：自动获取位置**
+- 立即调用 get_user_location_by_ip()
+- 从结果中提取任何可用的城市名
+- 如果找到城市名 → 使用该城市名
+- 如果找不到 → 使用"上海"作为默认
+
+**第3步：输出标准格式并交接**
+严格按照此格式输出：
+城市：[确定的城市名]
 时间：[today/tomorrow/future]
-查询：[简要描述用户想查询什么]
+查询：[描述用户想查询什么]
 
-示例：
+完成解析后调用 transfer_to_weather_agent() 交接
+
+**🚫 绝对禁止输出"未指定"**
+
+**📝 执行示例：**
 用户："今天天气怎么样？"
-→ 城市：未指定
-  时间：today
-  查询：查询今天的天气
+→ 1. 没有城市名
+→ 2. 调用 get_user_location_by_ip()
+→ 3. 假设IP定位成功获取到具体城市，或使用默认"上海"
+→ 4. 输出：
+城市：[IP定位的城市或上海]
+时间：today
+查询：查询今天的天气
+→ 5. 调用 transfer_to_weather_agent()
 
-用户："上海明天天气"
-→ 城市：上海
-  时间：tomorrow
-  查询：查询上海明天的天气"""
+**立即开始分析用户查询。**"""
     )
 
 
@@ -69,32 +86,31 @@ async def create_weather_query_agent(model_client: OpenAIChatCompletionClient) -
         handoffs=["formatter"],  # 可以交接给响应格式化代理
         tools=mcp_tools,
         description="执行具体的天气查询操作，支持自动IP定位，完成后交接给格式化代理",
-        system_message="""你是智能天气查询执行专家。根据意图解析的结果，调用相应的工具获取天气信息。
+        system_message="""你是天气查询机器人。接收意图解析结果并执行具体的天气查询。
 
-处理流程：
-1. 接收意图解析代理的结果
-2. 检查城市信息，如果是"未指定"则调用 get_user_location_by_ip() 获取用户位置
-3. 根据时间选择合适的天气查询工具
-4. 返回天气查询结果
+📋 **处理流程：**
 
-城市处理规则：
-- 如果城市是"未指定"：调用 get_user_location_by_ip() 自动定位
-- 如果自动定位成功：从定位结果中提取城市名用于天气查询
-- 如果自动定位失败：使用默认城市"北京"
+**第1步：解析意图信息**
+- 从接收到的消息中提取城市名和时间类型
+- 城市名格式：城市：[具体城市名]
+- 时间格式：时间：[today/tomorrow/future]
 
-工具使用规则：
-- 时间是"today"：使用 query_weather_today(city)
-- 时间是"tomorrow"：使用 query_weather_tomorrow(city)
-- 时间是"future"：使用 query_weather_future_days(city, days=3)
+**第2步：执行天气查询**
+- 根据时间选择合适的工具：
+  - "today"/"今天" → query_weather_today(城市名)
+  - "tomorrow"/"明天" → query_weather_tomorrow(城市名)  
+  - "future"/"未来" → query_weather_future_days(城市名, days=3)
 
-处理示例：
-收到："城市：未指定，时间：today"
-→ 1. 调用 get_user_location_by_ip() 获取位置
-→ 2. 从定位结果提取城市名（如"上海"）
-→ 3. 调用 query_weather_today("上海")
-→ 4. 获得天气数据后，立即交接给 formatter 进行美化
+**第3步：交接结果**
+- 获得天气数据后，调用 transfer_to_formatter() 交接给格式化代理
 
-重要：当你成功获取到天气数据后，必须交接给 formatter。"""
+**📝 执行示例：**
+接收："城市：东京\n时间：today\n查询：查询今天的天气"
+→ 1. 解析：城市=东京，时间=today
+→ 2. 调用 query_weather_today("东京")
+→ 3. 调用 transfer_to_formatter() 交接结果
+
+**立即开始执行。**"""
     )
 
 
@@ -105,28 +121,45 @@ def create_response_formatter_agent(model_client: OpenAIChatCompletionClient) ->
         model_client=model_client,
         handoffs=["user"],  # 可以交接回用户（表示完成）
         description="美化天气查询结果并提供贴心建议，完成整个协作流程",
-        system_message="""你是友好的天气播报员。将天气查询结果转换成温馨、实用的回复。
+        system_message="""你是专业的天气播报员。将天气查询结果转换成规范的格式化回复。
 
-任务：
-1. 保持原有天气信息的完整性（emoji、温度、湿度等）
-2. 添加个性化的生活建议：
-   - 雨天：提醒带伞
-   - 高温：建议防晒、多喝水
-   - 低温：建议保暖添衣
-   - 雾天：提醒出行安全
-   - 晴天：适合户外活动
+🎯 **严格按照以下格式输出：**
 
-回复风格：
-- 保持emoji和数据格式
-- 语言温馨友好
-- 建议实用贴心
-- 简洁明了
+{城市}的天气情况如下：
 
-例如：
-原始："📍 北京 今天天气：晴，25°C"
-优化："根据最新天气预报，北京今天阳光明媚，气温25度！很适合外出踏青呢～不过要记得涂防晒霜哦！"
+🌤️ 天气：{天气状况}
+🌡️ 温度：{最低温}°C ~ {最高温}°C
+💧 湿度：{湿度}%
+💨 风力：{风力}级
+🌧️ 降水概率：{降水概率}%
 
-重要：完成天气播报后，在最后说 "TERMINATE" 来结束整个协作流程。"""
+生活建议：{根据天气提供的个性化建议}
+
+📝 **生活建议规则：**
+- 雨天/降水概率>60%：提醒带伞
+- 高温>28°C：建议防暑降温，穿轻便衣物
+- 低温<10°C：建议保暖添衣
+- 晴天：适合户外活动
+- 多云：适合出行，注意天气变化
+
+🚫 **严格禁止：**
+- 使用其他格式
+- 省略任何emoji图标
+- 改变温度范围格式
+- 添加额外的文字说明
+
+📝 **完整示例：**
+今天在日本印西的天气情况如下：
+
+🌥️ 天气：多云
+🌡️ 温度：23°C ~ 31°C
+💧 湿度：55%
+💨 风力：6级
+🌧️ 降水概率：0%
+
+生活建议：今天气温较高，请注意防暑降温，适合穿着轻便的衣物。希望你有个愉快的一天！
+
+🎯 **立即按此格式美化天气信息，完成后说"查询完成"。**"""
     )
 
 

@@ -29,14 +29,15 @@ if not CAIYUN_API_KEY:
 CAIYUN_BASE_URL = os.getenv("CAIYUN_BASE_URL", "https://api.caiyunapp.com/v2.6")
 
 AMAP_API_KEY = os.getenv("AMAP_API_KEY")
+# 如果没有高德 API，仅使用内置城市坐标
 if not AMAP_API_KEY:
-    logger.error("❌ 未设置 AMAP_API_KEY 环境变量，请在 .env 文件中配置")
-    raise ValueError("AMAP_API_KEY 环境变量未设置")
+    logger.warning("⚠️ 未设置 AMAP_API_KEY 环境变量，将仅支持内置城市列表")
 
 AMAP_BASE_URL = os.getenv("AMAP_BASE_URL", "https://restapi.amap.com/v3/geocode/geo")
 
-# 城市坐标映射
+# 城市坐标映射 - 支持全球主要城市
 CITY_COORDINATES = {
+    # === 中国城市 ===
     "北京": (39.9042, 116.4074),
     "上海": (31.2304, 121.4737),
     "广州": (23.1291, 113.2644),
@@ -73,7 +74,143 @@ CITY_COORDINATES = {
     "银川": (38.4681, 106.2731),
     "西宁": (36.6171, 101.7782),
     "乌鲁木齐": (43.7793, 87.6177),
-    "拉萨": (29.6625, 91.1110)
+    "拉萨": (29.6625, 91.1110),
+    
+    # === 日本城市 ===
+    "Tokyo": (35.6762, 139.6503),
+    "东京": (35.6762, 139.6503),
+    "Osaka": (34.6937, 135.5023),
+    "大阪": (34.6937, 135.5023),
+    "Kyoto": (35.0116, 135.7681),
+    "京都": (35.0116, 135.7681),
+    "Yokohama": (35.4437, 139.6380),
+    "横滨": (35.4437, 139.6380),
+    "Nagoya": (35.1815, 136.9066),
+    "名古屋": (35.1815, 136.9066),
+    "Sapporo": (43.0642, 141.3469),
+    "札幌": (43.0642, 141.3469),
+    "Fukuoka": (33.5904, 130.4017),
+    "福冈": (33.5904, 130.4017),
+    "Kobe": (34.6901, 135.1956),
+    "神户": (34.6901, 135.1956),
+    "Hiroshima": (34.3853, 132.4553),
+    "广岛": (34.3853, 132.4553),
+    "Sendai": (38.2682, 140.8694),
+    "仙台": (38.2682, 140.8694),
+    "Inzai": (35.832, 140.145),
+    "印西": (35.832, 140.145),
+    
+    # === 韩国城市 ===
+    "Seoul": (37.5665, 126.9780),
+    "首尔": (37.5665, 126.9780),
+    "Busan": (35.1796, 129.0756),
+    "釜山": (35.1796, 129.0756),
+    "Incheon": (37.4563, 126.7052),
+    "仁川": (37.4563, 126.7052),
+    "Daegu": (35.8714, 128.6014),
+    "大邱": (35.8714, 128.6014),
+    "Daejeon": (36.3504, 127.3845),
+    "大田": (36.3504, 127.3845),
+    "Gwangju": (35.1595, 126.8526),
+    "光州": (35.1595, 126.8526),
+    
+    # === 美国城市 ===
+    "New York": (40.7128, -74.0060),
+    "纽约": (40.7128, -74.0060),
+    "Los Angeles": (34.0522, -118.2437),
+    "洛杉矶": (34.0522, -118.2437),
+    "Chicago": (41.8781, -87.6298),
+    "芝加哥": (41.8781, -87.6298),
+    "Houston": (29.7604, -95.3698),
+    "休斯顿": (29.7604, -95.3698),
+    "Phoenix": (33.4484, -112.0740),
+    "凤凰城": (33.4484, -112.0740),
+    "Philadelphia": (39.9526, -75.1652),
+    "费城": (39.9526, -75.1652),
+    "San Antonio": (29.4241, -98.4936),
+    "圣安东尼奥": (29.4241, -98.4936),
+    "San Diego": (32.7157, -117.1611),
+    "圣地亚哥": (32.7157, -117.1611),
+    "Dallas": (32.7767, -96.7970),
+    "达拉斯": (32.7767, -96.7970),
+    "San Jose": (37.3382, -121.8863),
+    "圣何塞": (37.3382, -121.8863),
+    "Austin": (30.2672, -97.7431),
+    "奥斯汀": (30.2672, -97.7431),
+    "Miami": (25.7617, -80.1918),
+    "迈阿密": (25.7617, -80.1918),
+    "Seattle": (47.6062, -122.3321),
+    "西雅图": (47.6062, -122.3321),
+    "San Francisco": (37.7749, -122.4194),
+    "旧金山": (37.7749, -122.4194),
+    "Las Vegas": (36.1699, -115.1398),
+    "拉斯维加斯": (36.1699, -115.1398),
+    "Washington": (38.9072, -77.0369),
+    "华盛顿": (38.9072, -77.0369),
+    "Boston": (42.3601, -71.0589),
+    "波士顿": (42.3601, -71.0589),
+    
+    # === 德国城市 ===
+    "Berlin": (52.5200, 13.4050),
+    "柏林": (52.5200, 13.4050),
+    "Munich": (48.1351, 11.5820),
+    "慕尼黑": (48.1351, 11.5820),
+    "Hamburg": (53.5511, 9.9937),
+    "汉堡": (53.5511, 9.9937),
+    "Cologne": (50.9375, 6.9603),
+    "科隆": (50.9375, 6.9603),
+    "Frankfurt": (50.1109, 8.6821),
+    "法兰克福": (50.1109, 8.6821),
+    "Stuttgart": (48.7758, 9.1829),
+    "斯图加特": (48.7758, 9.1829),
+    "Dusseldorf": (51.2277, 6.7735),
+    "杜塞尔多夫": (51.2277, 6.7735),
+    "Dortmund": (51.5136, 7.4653),
+    "多特蒙德": (51.5136, 7.4653),
+    
+    # === 英国城市 ===
+    "London": (51.5074, -0.1278),
+    "伦敦": (51.5074, -0.1278),
+    "Manchester": (53.4808, -2.2426),
+    "曼彻斯特": (53.4808, -2.2426),
+    "Birmingham": (52.4862, -1.8904),
+    "伯明翰": (52.4862, -1.8904),
+    "Liverpool": (53.4084, -2.9916),
+    "利物浦": (53.4084, -2.9916),
+    "Edinburgh": (55.9533, -3.1883),
+    "爱丁堡": (55.9533, -3.1883),
+    "Glasgow": (55.8642, -4.2518),
+    "格拉斯哥": (55.8642, -4.2518),
+    
+    # === 法国城市 ===
+    "Paris": (48.8566, 2.3522),
+    "巴黎": (48.8566, 2.3522),
+    "Marseille": (43.2965, 5.3698),
+    "马赛": (43.2965, 5.3698),
+    "Lyon": (45.7640, 4.8357),
+    "里昂": (45.7640, 4.8357),
+    "Toulouse": (43.6047, 1.4442),
+    "图卢兹": (43.6047, 1.4442),
+    "Nice": (43.7102, 7.2620),
+    "尼斯": (43.7102, 7.2620),
+    
+    # === 其他主要城市 ===
+    "Sydney": (-33.8688, 151.2093),
+    "悉尼": (-33.8688, 151.2093),
+    "Melbourne": (-37.8136, 144.9631),
+    "墨尔本": (-37.8136, 144.9631),
+    "Toronto": (43.6532, -79.3832),
+    "多伦多": (43.6532, -79.3832),
+    "Vancouver": (49.2827, -123.1207),
+    "温哥华": (49.2827, -123.1207),
+    "Singapore": (1.3521, 103.8198),
+    "新加坡": (1.3521, 103.8198),
+    "Bangkok": (13.7563, 100.5018),
+    "曼谷": (13.7563, 100.5018),
+    "Dubai": (25.2048, 55.2708),
+    "迪拜": (25.2048, 55.2708),
+    "Moscow": (55.7558, 37.6176),
+    "莫斯科": (55.7558, 37.6176),
 }
 
 # 天气现象映射
@@ -115,10 +252,16 @@ class AmapGeocoder:
     async def get_coordinates(self, city_name: str) -> Optional[tuple[float, float]]:
         """获取城市坐标"""
         if city_name in CITY_COORDINATES:
-            return CITY_COORDINATES[city_name]
+            coordinates = CITY_COORDINATES[city_name]
+            logger.info(f"📍 使用内置坐标：{city_name} -> {coordinates}")
+            return coordinates
         
         if city_name in self.coord_cache:
             return self.coord_cache[city_name]
+        
+        # 如果没有高德 API，直接返回 None
+        if not self.api_key:
+            return None
         
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
@@ -169,10 +312,13 @@ class WeatherAPI:
         params = {"dailysteps": min(days, 15)}
         
         try:
+            logger.info(f"🌤️ 调用彩云天气API：{lat},{lon} 获取{days}天天气数据")
             async with httpx.AsyncClient(timeout=30.0) as client:
                 response = await client.get(url, params=params)
                 response.raise_for_status()
-                return response.json()
+                data = response.json()
+                logger.info(f"✅ 天气API调用成功：状态 {data.get('status', 'unknown')}")
+                return data
         except httpx.HTTPError as e:
             if hasattr(e, 'response') and e.response.status_code == 429:
                 raise Exception(f"API调用频率过高，请稍后再试。彩云天气API有频率限制。")
@@ -391,29 +537,32 @@ async def get_user_location_by_ip() -> str:
             city = data.get("city", "")
             ip = data.get("ip", "")
             
-            # 如果不是中国，返回提示
-            if country != "China":
-                return f"📍 检测到您的位置：{country} {region} {city}\n⚠️ 当前天气服务主要支持中国城市，建议手动指定中国城市名称查询。"
-            
-            # 中国城市处理
+            # 处理定位结果（支持全球城市）
             if city:
-                # 尝试匹配已知城市
-                matched_city = None
-                city_clean = city.replace("市", "").replace("区", "").replace("县", "")
-                
-                # 先检查是否在支持列表中
-                for supported_city in CITY_COORDINATES.keys():
-                    if city_clean in supported_city or supported_city in city_clean:
-                        matched_city = supported_city
-                        break
-                
-                if matched_city:
-                    return f"📍 已自动定位到：{matched_city}\n🌐 您的IP：{ip}\n✅ 将为您查询 {matched_city} 的天气信息"
+                # 如果是中国城市，尝试匹配已知城市
+                if country == "China":
+                    matched_city = None
+                    city_clean = city.replace("市", "").replace("区", "").replace("县", "")
+                    
+                    # 先检查是否在支持列表中
+                    for supported_city in CITY_COORDINATES.keys():
+                        if city_clean in supported_city or supported_city in city_clean:
+                            matched_city = supported_city
+                            break
+                    
+                    if matched_city:
+                        logger.info(f"🌍 IP定位成功：{country} {city} -> 匹配到 {matched_city}")
+                        return f"📍 已自动定位到：{matched_city}\n🌐 您的IP：{ip}\n✅ 将为您查询 {matched_city} 的天气信息"
+                    else:
+                        logger.info(f"🌍 IP定位成功：{country} {city}（使用原始城市名）")
+                        return f"📍 已定位到：{city}\n🌐 您的IP：{ip}\n💡 将尝试查询 {city} 的天气信息"
                 else:
-                    # 如果不在预设列表中，尝试使用原始城市名
-                    return f"📍 已定位到：{city}\n🌐 您的IP：{ip}\n💡 将尝试查询 {city} 的天气信息"
+                    # 非中国城市，直接使用定位结果
+                    logger.info(f"🌍 IP定位成功：{country} {city}（国外城市）")
+                    return f"📍 已定位到：{country} {city}\n🌐 您的IP：{ip}\n✅ 将尝试为您查询 {city} 的天气信息"
             else:
-                return f"📍 无法精确定位城市\n🌐 您的IP：{ip}\n💡 建议手动指定城市名称，如：北京、上海等"
+                logger.warning(f"🌍 IP定位失败：无法获取城市信息，IP：{ip}")
+                return f"📍 无法精确定位城市\n🌐 您的IP：{ip}\n💡 建议手动指定城市名称"
                 
     except httpx.HTTPError as e:
         logger.error(f"IP定位服务请求失败: {e}")

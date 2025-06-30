@@ -47,8 +47,8 @@ class WeatherAgentTeam:
     async def initialize(self):
         """初始化所有代理和团队"""
         
-        # 创建三个专门的代理（weather_agent 使用 MCP 工具）
-        self.intent_parser = create_intent_parser_agent(self.model_client)
+        # 创建三个专门的代理（支持 MCP 工具和IP定位）
+        self.intent_parser = await create_intent_parser_agent(self.model_client)
         self.weather_agent = await create_weather_query_agent(self.model_client)
         self.formatter = create_response_formatter_agent(self.model_client)
         
@@ -64,26 +64,18 @@ class WeatherAgentTeam:
         """智能体选择器 - 控制代理协作流程"""
         if len(messages) <= 1:
             # 第一步：意图解析
-            if self.verbose:
-                print("🔄 协作流程：用户查询 → 意图解析代理")
             return "intent_parser"
         
         last_speaker = messages[-1].source
         
         if last_speaker == "intent_parser":
             # 第二步：天气查询
-            if self.verbose:
-                print("🔄 协作流程：意图解析完成 → 天气查询代理")
             return "weather_agent"
         elif last_speaker == "weather_agent":
             # 第三步：响应格式化
-            if self.verbose:
-                print("🔄 协作流程：天气查询完成 → 响应格式化代理")
             return "formatter"
         else:
             # 完成协作
-            if self.verbose:
-                print("✅ 协作流程完成！")
             return None
     
     def _create_termination_condition(self):
@@ -92,10 +84,14 @@ class WeatherAgentTeam:
         max_messages_termination = MaxMessageTermination(max_messages=8)
         return text_termination | max_messages_termination
     
-    async def query(self, user_input: str, show_process: bool = True) -> str:
+    async def query(self, user_input: str, show_process: bool = None) -> str:
         """执行天气查询"""
         if not self.team:
             await self.initialize()
+        
+        # 如果没有明确指定，检查环境变量，否则默认为 False
+        if show_process is None:
+            show_process = False
             
         if show_process:
             print(f"\n{'='*60}")
