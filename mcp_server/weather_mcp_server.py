@@ -5,20 +5,54 @@
 """
 
 import os
+import sys
 import httpx
 import logging
 from typing import Dict, Any, Optional
-from fastmcp import FastMCP
 from dotenv import load_dotenv
+
+# 必须在导入 FastMCP 之前设置环境变量和日志配置
+os.environ["FASTMCP_LOG_LEVEL"] = "CRITICAL"
+os.environ["NO_COLOR"] = "1"
+os.environ["TERM"] = "dumb"
+
+# 自定义日志过滤器，过滤掉特定消息
+class MessageFilter(logging.Filter):
+    """过滤掉 FastMCP 的启动消息"""
+    def filter(self, record):
+        # 过滤掉包含 "Starting MCP server" 的消息
+        if "Starting MCP server" in record.getMessage():
+            return False
+        return True
+
+# 设置基本日志配置
+logging.basicConfig(level=logging.INFO, format='%(message)s')
+
+# 为根日志器添加过滤器
+root_logger = logging.getLogger()
+root_logger.addFilter(MessageFilter())
+
+# 预先设置所有可能的日志器级别
+for logger_name in [
+    "FastMCP", "FastMCP.server", "FastMCP.server.server",
+    "fastmcp", "fastmcp.server", "fastmcp.server.server",
+    "mcp", "mcp.server", "rich", "httpx"
+]:
+    logger = logging.getLogger(logger_name)
+    logger.setLevel(logging.WARNING)  # 允许警告和错误，但过滤掉 INFO 级别的启动消息
+    logger.addFilter(MessageFilter())
+
+# 现在才导入 FastMCP
+from fastmcp import FastMCP
 
 # 加载环境变量
 parent_dir = os.path.dirname(os.path.dirname(__file__))
 load_dotenv(os.path.join(parent_dir, ".env.local"))
 load_dotenv(os.path.join(parent_dir, ".env"))
 
-# 设置日志
-logging.basicConfig(level=logging.INFO)
+# 允许天气服务器的关键日志
 logger = logging.getLogger("weather-mcp-server")
+logger.setLevel(logging.INFO)
 
 # API 配置
 CAIYUN_API_KEY = os.getenv("CAIYUN_API_KEY")
@@ -573,5 +607,4 @@ async def get_user_location_by_ip() -> str:
 
 # 运行服务器
 if __name__ == "__main__":
-    logger.info("启动彩云天气 MCP 服务器...")
     mcp.run()

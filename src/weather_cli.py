@@ -14,9 +14,6 @@ import shutil
 # 默认简洁模式 - 直接设置主要的日志级别
 logging.basicConfig(level=logging.WARNING, format='%(message)s')
 
-# 只允许天气相关的关键日志
-logging.getLogger("weather-mcp-server").setLevel(logging.INFO)
-
 def choose_mode():
     """选择协作模式"""
     print("\n🤖 选择天气系统协作模式:")
@@ -54,7 +51,6 @@ def setup_logging(show_debug: bool):
     else:
         # 简洁模式：只显示关键日志
         logging.getLogger().setLevel(logging.WARNING)
-        logging.getLogger("weather-mcp-server").setLevel(logging.INFO)
         print("🔇 简洁模式：只显示关键日志")
 
 def choose_debug_mode():
