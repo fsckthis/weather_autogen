@@ -4,23 +4,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-这是一个基于 Microsoft AutoGen 框架的多代理协作天气查询系统，支持智能 IP 地理定位。项目展示了智能体群组协作，通过三个专门的代理协作完成天气查询任务：
+这是一个基于 Microsoft AutoGen 框架的多代理协作天气查询系统，支持智能 IP 地理定位和全球城市天气查询。项目展示了智能体群组协作，通过三个专门的代理协作完成天气查询任务：
 
-1. **意图解析代理** - 分析用户查询意图，提取城市和时间信息
-2. **天气查询代理** - 执行具体的天气数据获取（集成工具调用），支持 IP 自动定位
-3. **响应格式化代理** - 美化输出结果并提供生活建议
+1. **意图解析代理** - 分析用户查询意图，提取城市和时间信息，自动处理IP定位
+2. **天气查询代理** - 执行具体的天气数据获取，支持全球100+城市查询
+3. **响应格式化代理** - 规范化输出结果并提供个性化生活建议
 
-**🆕 核心功能更新：** 当用户查询没有明确指定城市时，系统会自动通过 IP 地址获取用户地理位置，实现无城市查询。
+**🆕 核心功能更新：** 当用户查询没有明确指定城市时，系统会自动通过 IP 地址获取用户地理位置，支持全球城市天气查询。
 
-**🔄 协作模式：** 项目支持三种协作模式，方便学习和对比不同的多代理协作机制。
+**🔄 协作模式：** 项目支持三种协作模式，方便学习和对比不同的多代理协作机制。默认推荐使用 Magentic-One 模式。
 
 **📋 架构说明：**
 
-- `src/selector_groupchat/` - SelectorGroupChat 集中式选择器协作模式（原始实现）
+- `src/selector_groupchat/` - SelectorGroupChat 集中式选择器协作模式
 - `src/swarm/` - Swarm 去中心化 handoff 协作模式
-- `src/magentic_one/` - Magentic-One 智能自动化团队协作模式
+- `src/magentic_one/` - Magentic-One 智能自动化团队协作模式（推荐）
 
 **🧪 测试系统：** 统一的测试系统支持动态选择协作模式，可通过环境变量 `WEATHER_MODE` 选择运行哪种实现。
+
+**🎯 最新优化：** 修复了 MagenticOneOrchestrator 偶现跳过 formatter 的问题，确保稳定的三阶段协作流程。
 
 ## Quick Start Commands
 
@@ -219,7 +221,7 @@ from autogen_agentchat.teams import Swarm
 from autogen_agentchat.conditions import HandoffTermination, TextMentionTermination
 
 # 创建终止条件
-termination = HandoffTermination(target="user") | TextMentionTermination("TERMINATE")
+termination = HandoffTermination(target="user") | TextMentionTermination("查询完成")
 
 # 创建 Swarm 团队
 self.swarm_team = Swarm(
@@ -228,14 +230,34 @@ self.swarm_team = Swarm(
 )
 ```
 
+### Recent Improvements
+
+**🔧 Magentic-One 稳定性优化：**
+
+1. **修复 formatter 偶现未调用问题**：
+   - 强化 formatter 重要性标记为 `🔥CRITICAL🔥`
+   - 简化 weather_agent 系统消息，减少职责混淆
+   - 增加最大消息数从15到20，提供更多协作机会
+
+2. **统一代理架构**：
+   - intent_parser 负责IP定位和意图解析
+   - weather_agent 专注天气数据获取
+   - formatter 确保规范化输出格式
+
+3. **全球城市支持**：
+   - 内置100+国际城市坐标
+   - 移除高德API强依赖
+   - 支持日本、韩国、美国、德国等主要城市
+
 **与 SelectorGroupChat 的对比：**
 
-| 特性       | SelectorGroupChat                    | Swarm                                           |
-| ---------- | ------------------------------------ | ----------------------------------------------- |
-| 协作方式   | 集中式调度                           | 去中心化交接                                    |
-| 配置复杂度 | 高（需要 `selector_func`）           | 低（声明式 `handoffs`）                         |
-| 终止条件   | `MaxMessageTermination` + 自定义逻辑 | `HandoffTermination` + `TextMentionTermination` |
-| 扩展性     | 需修改选择器函数                     | 只需配置 handoffs                               |
+| 特性       | SelectorGroupChat                    | Swarm                                           | Magentic-One                    |
+| ---------- | ------------------------------------ | ----------------------------------------------- | ------------------------------- |
+| 协作方式   | 集中式调度                           | 去中心化交接                                    | 智能自动化调度                  |
+| 配置复杂度 | 高（需要 `selector_func`）           | 低（声明式 `handoffs`）                         | 极低（仅需description）         |
+| 终止条件   | `MaxMessageTermination` + 自定义逻辑 | `HandoffTermination` + `TextMentionTermination` | 自动识别 + `TextMentionTermination` |
+| 扩展性     | 需修改选择器函数                     | 只需配置 handoffs                               | 添加代理描述即可                |
+| 稳定性     | 高（确定性流程）                     | 中（依赖handoff逻辑）                           | 高（智能调度+优化）             |
 
 ## Key Dependencies
 
@@ -257,13 +279,16 @@ self.swarm_team = Swarm(
 **🆕 IP 定位功能说明：**
 
 - IP 定位使用免费的 `ipapi.co` 服务，无需额外 API 密钥
-- 支持中国城市智能匹配，非中国地区提供友好提示
+- **全球城市支持**：支持100+国际城市（中国、日本、韩国、美国、德国、英国、法国等）
+- 智能城市匹配，自动识别并查询当地天气
 - 当用户查询不包含明确城市时自动触发
 
 **可选的环境变量：**
 
 - `OPENAI_MODEL` - OpenAI 模型名称（默认：gpt-4o-mini）
 - `CAIYUN_BASE_URL` - 彩云天气 API 基础 URL（默认：<https://api.caiyunapp.com/v2.6）>
+- `WEATHER_SHOW_PROCESS` - 是否显示详细协作过程（true/false，默认 false）
+- `AMAP_API_KEY` - 高德地图API密钥（可选，仅用于额外城市坐标支持）
 
 **安全提醒：**
 
@@ -278,11 +303,12 @@ self.swarm_team = Swarm(
 - **Swarm 协作模式**：意图解析 → weather_agent → formatter → user (完成)
 - **去中心化交接**：每个代理通过 `handoffs` 声明可交接目标，主动调用 `transfer_to_xxx()`
 - **智能定位**：支持无城市查询，自动 IP 地理定位
-- **灵活终止条件**：`HandoffTermination(target="user")` | `TextMentionTermination("TERMINATE")`
+- **统一终止条件**：`HandoffTermination(target="user")` | `TextMentionTermination("查询完成")`
 - 系统消息采用中文，适合中文天气查询场景
 - 智能城市处理：指定城市直接查询，未指定则 IP 定位
-- **状态管理**：每次查询重新初始化 Swarm 实例，确保状态干净
+- **状态管理**：每次查询重新初始化实例，确保状态干净
 - 通过环境变量自动加载 API 密钥
+- **UI优化**：终端宽度分隔线，简化日志控制，默认简洁模式
 
 **Swarm vs SelectorGroupChat：**
 
@@ -301,10 +327,11 @@ self.swarm_team = Swarm(
 ### MCP 天气服务器（FastMCP 版本）
 
 - `weather_mcp_server.py` 使用 FastMCP 框架
-- 支持 37 个中国主要城市，集成彩云天气真实 API
-- **🆕 IP 定位功能**：集成 `ipapi.co` 服务，支持全球 IP 地理定位
-- **注意：彩云天气 API 有频率限制，测试时请控制调用频率**
+- **🌍 全球城市支持**：内置100+国际城市坐标（中国、日本、韩国、美国、德国、英国、法国等）
+- **🆕 IP 定位功能**：集成 `ipapi.co` 服务，支持全球 IP 地理定位，无需高德API依赖
+- **彩云天气 API**：集成真实天气数据，注意频率限制
 - API 失败时会返回明确的错误信息而非降级数据
 - 使用标准 MCP 协议，可与 Claude Desktop 等客户端集成
 - FastMCP 提供装饰器模式，自动类型推断和 Schema 生成
 - **测试覆盖**：50 个测试用例，100%通过率
+- **稳定性优化**：修复 formatter 调用稳定性，确保规范化输出格式
